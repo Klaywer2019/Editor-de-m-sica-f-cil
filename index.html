@@ -54,10 +54,10 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve! Sou o Keime, seu produtor. 🎧\n\nAntes de soltar a caneta, preciso entender a alma do seu som. Qual o ESTILO (Trap, Sertanejo, Rock...) e qual o SENTIMENTO que você quer passar hoje?</div>
+                <div class="msg ia">Salve! Sou o Keime. 🎧\n\nQuer criar um hit novo do zero ou precisa de uma mão pra arrumar alguma letra que já tá no papel?</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Responda ao Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
+                <input type="text" id="chat-input" placeholder="Manda a visão pro Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
@@ -65,6 +65,7 @@
 
     <script>
         let etapaChat = 0;
+        let modoEdicao = false;
         let dadosMusica = { estilo: "", tema: "", detalhes: "" };
 
         function openTab(tabId) {
@@ -97,40 +98,50 @@
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                // LÓGICA DE ELOGIOS E HUMOR
-                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora", "melhor", "amei", "gostei"];
-                const ehElogio = elogios.some(p => texto.includes(p));
-                let grato = "";
+                // LÓGICA DE DETECÇÃO DE AJUSTE/REVISÃO
+                const termosRevisao = ["arrumar", "ajeitar", "mudar", "corrigir", "melhorar", "muda", "ajeita", "troca"];
+                const querRevisar = termosRevisao.some(p => texto.includes(p));
 
-                if(ehElogio) {
-                    const falas = [
-                        "Tamo junto! É nois que voa. 👊",
-                        "Valeu pela moral, meu mano! 🚀",
-                        "Fico felizão que tá curtindo o trampo! ✨",
-                        "É o bonde! Vamos fazer história. 🔥"
-                    ];
-                    grato = falas[Math.floor(Math.random() * falas.length)] + "\n\nMas ó, focando aqui... ";
+                if(querRevisar) {
+                    modoEdicao = true;
+                    resposta = "Pode crer! O bom produtor nunca para até a letra estar perfeita. ✨\n\nO que exatamente você quer mudar? Pode mandar o trecho ou me falar o que não tá batendo.";
+                    iDiv.innerText = resposta;
+                    container.appendChild(iDiv);
+                    container.scrollTop = container.scrollHeight;
+                    return;
                 }
 
+                // Se estiver no modo edição, ele foca em ajudar a arrumar
+                if(modoEdicao) {
+                    resposta = "Entendi a mudança! Se liga nessa sugestão que eu dei pra lapidar isso:\n\n(Sugestão do Keime)\n\"" + msgUser + " (Versão com mais impacto)\"\n\nFicou melhor assim ou quer tentar outro ajuste?";
+                    iDiv.innerText = resposta;
+                    container.appendChild(iDiv);
+                    container.scrollTop = container.scrollHeight;
+                    return;
+                }
+
+                // LÓGICA DE ELOGIOS
+                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora"];
+                const ehElogio = elogios.some(p => texto.includes(p));
+                let grato = ehElogio ? "Tamo junto! É nois. 👊\n\n" : "";
+
+                // ENTREVISTA PARA NOVA MÚSICA
                 if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = (grato || "") + "Entendi, a vibe é " + dadosMusica.estilo + ". Pesado! 🔥\n\nAgora me conta: Qual a HISTÓRIA por trás dessa música?";
+                    resposta = grato + "Fechou, o estilo é " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA dessa composição?";
                     etapaChat = 1;
                 } else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = (grato || "") + "Tô sentindo o feeling... ✍️\n\nÚltima pergunta: Você quer uma música pra AGITAR ou algo mais PROFUNDO?";
+                    resposta = grato + "Visão captada. ✍️\n\nÚltima pergunta: É pra AGITAR ou pra REFLETIR?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
                     dadosMusica.detalhes = msgUser;
-                    resposta = (grato || "") + "Aulas! Já tenho tudo. Vou soltar a caneta...\n\n(Processando sentimento...) 🚀";
-                    
+                    resposta = "Aulas! Vou processar tudo e soltar o hit... 🚀";
                     iDiv.innerText = resposta;
                     container.appendChild(iDiv);
-                    
                     setTimeout(() => {
-                        const hitDiv = document.createElement('div');
-                        hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ SEU HIT (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica);
+                        const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
+                        hitDiv.innerText = "AQUI ESTÁ O RASCUNHO:\n\n" + gerarLetraDinamica(dadosMusica) + "\n\nSe quiser arrumar alguma coisa, só me avisar!";
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
                         etapaChat = 0;
@@ -145,16 +156,7 @@
         }
 
         function gerarLetraDinamica(dados) {
-            // Pequena variação baseada no estilo
-            const est = dados.estilo.toLowerCase();
-            if(est.includes("sertanejo") || est.includes("sofrência")) {
-                return "(Refrão)\nO copo tá cheio, o peito tá vazio\nA saudade dói e me causa arrepio\nTô no bar de sempre tentando esquecer\nQue a minha vida é amar você.";
-            }
-            if(est.includes("rock")) {
-                return "(Intro/Solo)\nO asfalto queima sob os meus pés\nNão sigo as regras, não sigo as leis\nO grito no peito quer liberdade\nVivendo a mil nessa cidade.";
-            }
-            // Padrão (Trap/Rap/Geral)
-            return "(Refrão)\nO mundo gira e eu sigo focado\nO que passou ficou no passado\nCom a visão clara e o peito aberto\nO meu sucesso agora tá perto.\n\n(Verso)\nNasci pra vencer, não aceito derrota\nA vida é um jogo e eu abro a porta.";
+            return "(Refrão)\nO tempo voa e eu não fico parado\nConstruindo o futuro, honrando o passado\n(Verso)\nMinha caneta é o pincel do destino\nFaço a trilha do meu próprio caminho.";
         }
 
         function salvarNaBiblioteca() {
