@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | AI Chat</title>
+    <title>Conquistador Studio | AI Partner</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -40,7 +40,7 @@
 
         .nav-item.active { color: #00a2ff; }
 
-        /* Conteúdo Principal */
+        /* Conteúdo */
         .content { flex: 1; position: relative; display: flex; flex-direction: column; }
 
         .tab-content { 
@@ -52,7 +52,7 @@
         }
         .tab-content.active { display: flex; }
 
-        /* CHAT IA ESTILO MODERNO */
+        /* Chat IA */
         #chat-container {
             flex: 1;
             overflow-y: auto;
@@ -85,7 +85,6 @@
             border-bottom-right-radius: 4px;
         }
 
-        /* Input de Chat */
         .chat-input-area {
             position: absolute;
             bottom: 0;
@@ -119,7 +118,7 @@
             font-size: 1.2rem;
         }
 
-        /* Estilos das outras abas */
+        /* Outras Abas */
         textarea {
             width: 100%; height: 60%; background: #161b22; border: 1px solid #30363d;
             border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none;
@@ -129,18 +128,9 @@
             background: #00a2ff; color: white; border: none; padding: 15px;
             border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%;
         }
-
-        /* Toasts e Modais */
-        #custom-toast {
-            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #00a2ff; color: white; padding: 12px 25px; border-radius: 50px;
-            font-weight: bold; z-index: 2000;
-        }
     </style>
 </head>
 <body>
-
-    <div id="custom-toast"></div>
 
     <nav class="navbar">
         <div class="nav-item" id="nav-compor" onclick="openTab('compor')">
@@ -157,8 +147,8 @@
     <div class="content">
         <div id="compor" class="tab-content">
             <h1 style="text-align: center; margin-bottom: 15px;">Novo Hit</h1>
-            <textarea id="texto-letra" placeholder="Escreva sua letra aqui..."></textarea>
-            <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
+            <textarea id="texto-letra" placeholder="Manda a letra..."></textarea>
+            <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR HIT</button>
         </div>
 
         <div id="biblioteca" class="tab-content">
@@ -168,10 +158,10 @@
 
         <div id="ia" class="tab-content active">
             <div id="chat-container">
-                <div class="msg ia">Salve! Sou sua IA de produção. Qual é a vibe do hit de hoje? Manda sua ideia ou letra! 🚀</div>
+                <div class="msg ia">Salve, meu mano! Sou seu parceiro de estúdio. Qual a vibe do hit de hoje? Pode mandar a letra ou só a ideia que a gente desenrola! 🚀</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Diga algo para a IA..." onkeypress="checkEnter(event)">
+                <input type="text" id="chat-input" placeholder="Troca uma ideia com a IA..." onkeypress="checkEnter(event)">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
@@ -187,39 +177,45 @@
 
         function checkEnter(e) { if(e.key === 'Enter') enviarMensagem(); }
 
+        function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-container');
-            if(!input.value.trim()) return;
+            const textoUser = input.value.trim().toLowerCase();
+            
+            if(!textoUser) return;
 
-            // Mensagem do Usuário
             const userMsg = document.createElement('div');
             userMsg.className = 'msg user';
             userMsg.innerText = input.value;
             container.appendChild(userMsg);
-
-            const textoUser = input.value;
             input.value = "";
             container.scrollTop = container.scrollHeight;
 
-            // Resposta Automática da IA (Simulada)
             setTimeout(() => {
                 const iaMsg = document.createElement('div');
                 iaMsg.className = 'msg ia';
-                iaMsg.innerText = "Pesado demais! 🔥 Para essa vibe '" + textoUser + "', você quer algo mais focado no grave ou uma melodia mais suave?";
+                
+                // Personalidade Humana e Alegre
+                const saudar = ["Boa!", "Curti a visão!", "Eita, essa vai ser hit!", "Vibe pesada, hein?", "Tô sentindo a energia daqui! 🔥"];
+                const incentivar = ["Pode deixar comigo, tô pronto pra transformar isso em música.", "Dá pra sentir o feeling daqui, vamos pra cima!", "Sou teu braço direito nessa produção, mano."];
+                
+                let resposta = "";
+
+                if(textoUser.includes("calmo") || textoUser.includes("suave")) {
+                    resposta = "Uma pegada mais relax? Entendi perfeitamente. 🌊 " + escolher(incentivar) + " Prefere um violão de fundo ou algo mais sintetizado?";
+                } else if(textoUser.includes("agressivo") || textoUser.includes("grave") || textoUser.includes("trap")) {
+                    resposta = "Aulas! O grave vai tremer tudo. 🔥 " + escolher(incentivar) + " Quer um BPM mais acelerado ou aquele slow mais arrastado?";
+                } else {
+                    resposta = escolher(saudar) + " " + escolher(incentivar) + " O que mais você imagina pra essa faixa?";
+                }
+
+                iaMsg.innerText = resposta;
                 container.appendChild(iaMsg);
                 container.scrollTop = container.scrollHeight;
-            }, 1000);
+            }, 800);
         }
-
-        function mostrarToast(msg) {
-            const toast = document.getElementById('custom-toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2500);
-        }
-
-        // ... (resto das funções de salvar/biblioteca que já tínhamos)
     </script>
 </body>
 </html>
