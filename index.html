@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Pro Final</title>
+    <title>Conquistador Studio | Creative AI</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -120,10 +120,10 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve, meu mano! Sou seu parceiro de estúdio. Me manda uma ideia ou um tema que eu já mando um rascunho de hit pra gente amassar! 🔥🚀</div>
+                <div class="msg ia">E aí, qual a visão de hoje? Manda a letra, o tema ou só o sentimento que a gente transforma em hit! 🚀🔥</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Fala com a IA..." onkeypress="if(event.key==='Enter')enviarMensagem()">
+                <input type="text" id="chat-input" placeholder="Ideia para o hit..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
@@ -207,18 +207,25 @@
             setTimeout(() => {
                 const iM = document.createElement('div'); iM.className = 'msg ia';
                 
-                const saudar = ["Slc, essa visão é braba!", "Aulas! Curti o tema.", "Tô sentindo a energia daqui!", "Bora pra cima!", "Essa vai ser hit, pode anotar! 🔥"];
-                const saudaAleatoria = saudar[Math.floor(Math.random() * saudar.length)];
+                // LÓGICA DE PERSONALIDADE CRIATIVA
+                const saudar = ["Slc, essa visão é braba!", "Aulas! Já visualizei o beat.", "Pode deixar comigo, essa aqui vai pro topo.", "Mano, essa ideia tem muito feeling.", "Foco total, vamos lapidar isso agora!"];
+                const frasesMeio = ["Sente essa letra que montei pra gente:", "Já comecei a escrever as primeiras rimas aqui:", "Se liga nesse esboço de composição:", "Dá um check nesse rascunho que saiu agora:"];
 
-                const rascunhos = [
-                    `${saudaAleatoria} Olha esse rascunho pra "${textoUser}":\n\n(Refrão)\nNo brilho da city, eu busco o meu lugar\nCom a visão de cria, ninguém vai me parar\nNotas no bolso e a mente no topo\nO plano tá traçado, eu sou o novo foco.\n\nO que achou dessa linha?`,
-                    
-                    `${saudaAleatoria} Pra esse tema de "${textoUser}", pensei nessa letra:\n\n(Verso)\nAcordei focado, o plano tá traçado\nDeixando pra trás tudo o que foi errado\nHoje o mundo gira no meu compasso\nConquistador nato, eu nunca me canso.\n\nQuer que eu mude o ritmo?`,
-                    
-                    `${saudaAleatoria} Se liga nesse esboço pra "${textoUser}":\n\n(Intro)\n(Grave batendo forte...)\nEles falaram que eu não ia conseguir\nMas olha pra mim, eu ainda tô aqui\nMinha história eu mesmo escrevo\nTransformando em ouro tudo o que eu vejo.\n\nQualquer ajuste é só falar!`
+                const letras = [
+                    "(Refrão)\nOnde o mundo gira, eu faço o meu caminho\nNo brilho da city, nunca tô sozinho\nA visão tá clara, o plano é vencer\nFocado no topo, nada a perder.",
+                    "(Verso)\nAcordei com a mente blindada pro jogo\nTransformando em ouro tudo o que é novo\nO passo é firme, a sola não gasta\nSou Conquistador, o resto se afasta.",
+                    "(Ponte)\nEles tentaram me segurar, mas eu voei alto\nSaí do silêncio, fiz barulho no asfalto\nMinha letra é caneta, meu som é o escudo\nNessa batida, eu domino tudo."
                 ];
 
-                iM.innerText = rascunhos[Math.floor(Math.random() * rascunhos.length)];
+                const final = ["O que achou desse começo?", "Quer que eu mude a pegada ou siga nessa linha?", "Se curtiu, a gente pode puxar pro refrão agora.", "Diz aí, ficou na vibe que você queria?"];
+
+                // Montando a resposta sem repetir o usuário
+                const r1 = saudar[Math.floor(Math.random() * saudar.length)];
+                const r2 = frasesMeio[Math.floor(Math.random() * frasesMeio.length)];
+                const r3 = letras[Math.floor(Math.random() * letras.length)];
+                const r4 = final[Math.floor(Math.random() * final.length)];
+
+                iM.innerText = `${r1}\n\n${r2}\n\n${r3}\n\n${r4}`;
                 container.appendChild(iM); 
                 container.scrollTop = container.scrollHeight;
             }, 1000);
