@@ -54,10 +54,10 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve! Sou o Keime. 🎧\n\nQuer criar um hit novo do zero ou precisa de uma mão pra arrumar alguma letra que já tá no papel?</div>
+                <div class="msg ia">Salve! Sou o Keime. 🎧\n\nQuer criar um hit novo do zero ou precisa de uma mão pra arrumar alguma letra?</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Manda a visão pro Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
+                <input type="text" id="chat-input" placeholder="Fala com o Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
@@ -67,6 +67,15 @@
         let etapaChat = 0;
         let modoEdicao = false;
         let dadosMusica = { estilo: "", tema: "", detalhes: "" };
+
+        // BANCO DE PERSONALIDADE PARA VARIAR AS RESPOSTAS
+        const keimeDialetos = {
+            gratidao: ["Tamo junto! É nois que voa. 👊", "Valeu pela moral, meu mano! 🚀", "Fico felizão que tá curtindo o trampo! ✨", "É o bonde! Vamos fazer história. 🔥"],
+            entendido: ["Visão captada!", "Aulas, entendi a fita.", "Pode crer, tô na mesma frequência.", "Anotado! O plano tá ficando brabo."],
+            revisao: ["Bora lapidar esse diamante. O que não tá batendo?", "Manda a letra! O produtor nunca para até estar perfeito.", "Sou todo ouvidos. Qual parte a gente vai mudar?", "Pode falar, onde a gente vai mexer?"]
+        };
+
+        function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -98,41 +107,35 @@
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                // LÓGICA DE DETECÇÃO DE AJUSTE/REVISÃO
+                // 1. CHECAGEM DE INTERRUPÇÃO (QUER ARRUMAR ALGO?)
                 const termosRevisao = ["arrumar", "ajeitar", "mudar", "corrigir", "melhorar", "muda", "ajeita", "troca"];
                 const querRevisar = termosRevisao.some(p => texto.includes(p));
 
                 if(querRevisar) {
                     modoEdicao = true;
-                    resposta = "Pode crer! O bom produtor nunca para até a letra estar perfeita. ✨\n\nO que exatamente você quer mudar? Pode mandar o trecho ou me falar o que não tá batendo.";
+                    etapaChat = -1; // Pausa a entrevista se estiver ocorrendo
+                    resposta = escolher(keimeDialetos.revisao);
                     iDiv.innerText = resposta;
                     container.appendChild(iDiv);
                     container.scrollTop = container.scrollHeight;
                     return;
                 }
 
-                // Se estiver no modo edição, ele foca em ajudar a arrumar
-                if(modoEdicao) {
-                    resposta = "Entendi a mudança! Se liga nessa sugestão que eu dei pra lapidar isso:\n\n(Sugestão do Keime)\n\"" + msgUser + " (Versão com mais impacto)\"\n\nFicou melhor assim ou quer tentar outro ajuste?";
-                    iDiv.innerText = resposta;
-                    container.appendChild(iDiv);
-                    container.scrollTop = container.scrollHeight;
-                    return;
-                }
-
-                // LÓGICA DE ELOGIOS
-                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora"];
+                // 2. CHECAGEM DE ELOGIO
+                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora", "amei", "gostei"];
                 const ehElogio = elogios.some(p => texto.includes(p));
-                let grato = ehElogio ? "Tamo junto! É nois. 👊\n\n" : "";
+                let grato = ehElogio ? escolher(keimeDialetos.gratidao) + "\n\n" : "";
 
-                // ENTREVISTA PARA NOVA MÚSICA
-                if (etapaChat === 0) {
+                // 3. FLUXO DE RESPOSTA
+                if(modoEdicao) {
+                    resposta = "Saquei o ajuste! Se liga nessa visão que eu tive pra isso:\n\n\"" + msgUser + " (Versão Keime Studio)\"\n\nFicou mais pesado assim ou quer mexer mais?";
+                } else if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = grato + "Fechou, o estilo é " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA dessa composição?";
+                    resposta = grato + escolher(keimeDialetos.entendido) + " O estilo é " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás dessa música?";
                     etapaChat = 1;
                 } else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = grato + "Visão captada. ✍️\n\nÚltima pergunta: É pra AGITAR ou pra REFLETIR?";
+                    resposta = grato + "Visão captada. ✍️\n\nÚltima pergunta: É pra AGITAR a pista ou algo mais PROFUNDO?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
                     dadosMusica.detalhes = msgUser;
@@ -141,12 +144,14 @@
                     container.appendChild(iDiv);
                     setTimeout(() => {
                         const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ O RASCUNHO:\n\n" + gerarLetraDinamica(dadosMusica) + "\n\nSe quiser arrumar alguma coisa, só me avisar!";
+                        hitDiv.innerText = "AQUI ESTÁ O RASCUNHO (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica) + "\n\nCurtiu a pegada ou quer ajeitar algo?";
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
-                        etapaChat = 0;
+                        etapaChat = 0; // Reseta para nova música
                     }, 2000);
                     return;
+                } else {
+                    resposta = grato + "Manda a visão! Quer criar algo novo ou mexer em algum projeto?";
                 }
 
                 iDiv.innerText = resposta;
