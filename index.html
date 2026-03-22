@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Sound | Studio</title>
+    <title>Conquistador Studio | Top Menu</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -12,144 +12,139 @@
             background-color: #0d1117;
             color: white;
             display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Menu Lateral (Sidebar) */
-        .sidebar {
-            width: 250px;
-            background-color: #161b22;
-            border-right: 1px solid #30363d;
-            display: flex;
             flex-direction: column;
-            padding: 20px;
+            height: 100vh;
         }
 
-        .sidebar h2 {
-            color: #00a2ff;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            text-align: center;
+        /* Menu Superior (Navbar) */
+        .navbar {
+            background-color: #161b22;
+            border-bottom: 2px solid #00a2ff;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .menu-item {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
+        .nav-item {
+            color: #8b949e;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-decoration: none;
             cursor: pointer;
             transition: 0.3s;
-            color: #8b949e;
-            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
-        .menu-item:hover, .menu-item.active {
-            background-color: #21262d;
+        .nav-item:hover, .nav-item.active {
             color: #00a2ff;
         }
 
-        /* Área Principal */
-        .main-content {
+        /* Área de Conteúdo */
+        .content {
             flex: 1;
-            padding: 40px;
-            overflow-y: auto;
+            padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .tab-content {
             display: none;
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Estilo dos Cards/Pastas */
-        .folder-list {
-            display: grid;
-            gap: 15px;
-        }
-
-        .music-item {
-            background: #21262d;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #00a2ff;
-        }
-
         /* Estilo da área de composição */
+        h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
+
         textarea {
             width: 100%;
-            height: 300px;
-            background: #0d1117;
+            height: 350px;
+            background: #161b22;
             border: 1px solid #30363d;
             border-radius: 12px;
             color: white;
-            padding: 20px;
+            padding: 15px;
             font-size: 1rem;
             resize: none;
+            outline: none;
         }
+
+        textarea:focus { border-color: #00a2ff; }
 
         button {
             background: #00a2ff;
             color: white;
             border: none;
-            padding: 15px 25px;
+            padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 15px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
+            font-size: 1rem;
         }
 
-        .status-msg {
-            margin-top: 15px;
-            color: #58a6ff;
-            text-align: center;
+        /* Lista de Músicas */
+        .music-card {
+            background: #1c2128;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 4px solid #00a2ff;
         }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>Conquistador Studio</h2>
-        <div class="menu-item active" onclick="openTab('compor')">📝 Compor Letra</div>
-        <div class="menu-item" onclick="openTab('biblioteca')">📂 Minhas Músicas</div>
-        <div class="menu-item" onclick="openTab('producao')">⚡ Produção IA</div>
-    </div>
+    <nav class="navbar">
+        <div class="nav-item active" onclick="openTab('compor')">
+            <span>📝</span>
+            <span>Compor</span>
+        </div>
+        <div class="nav-item" onclick="openTab('biblioteca')">
+            <span>📂</span>
+            <span>Músicas</span>
+        </div>
+        <div class="nav-item" onclick="openTab('ia')">
+            <span>⚡</span>
+            <span>Produção IA</span>
+        </div>
+    </nav>
 
-    <div class="main-content">
+    <div class="content">
         
         <div id="compor" class="tab-content active">
-            <h1>Nova Composição</h1>
-            <p style="color: #8b949e; margin-bottom: 20px;">Escreva seu manifesto...</p>
-            <textarea placeholder="O lixo é o lugar onde o diamante vai brilhar..."></textarea>
-            <button>SALVAR RASCUNHO</button>
+            <h1>Novo Hit</h1>
+            <textarea placeholder="Escreva sua letra aqui..."></textarea>
+            <button>SALVAR NA BIBLIOTECA</button>
         </div>
 
         <div id="biblioteca" class="tab-content">
-            <h1>Sua Biblioteca</h1>
-            <p style="color: #8b949e; margin-bottom: 20px;">Pastas e gravações salvas.</p>
-            <div class="folder-list">
-                <div class="music-item"><span>teste musical</span> <small>BPM 88</small></div>
-                <div class="music-item"><span>Issabella</span> <small>BPM 88</small></div>
-                <div class="music-item"><span>Manifesto Diamante</span> <small>BPM 140</small></div>
-            </div>
+            <h1>Minhas Pastas</h1>
+            <div class="music-card"><span>Manifesto v1</span> <small>18/03/26</small></div>
+            <div class="music-card"><span>Kaiser Flow</span> <small>17/03/26</small></div>
+            <div class="music-card"><span>Diamante Bruto</span> <small>16/03/26</small></div>
         </div>
 
-        <div id="producao" class="tab-content">
-            <h1>Produção Inteligente</h1>
-            <p style="color: #8b949e; margin-bottom: 20px;">Transforme texto em áudio.</p>
-            <div style="background: #161b22; padding: 30px; border-radius: 15px; text-align: center;">
-                <p>IA pronta para gerar trilha Dark/Epic...</p>
-                <button onclick="simularIA()">GERAR TRILHA AGORA</button>
-                <div id="ia-status" class="status-msg"></div>
+        <div id="ia" class="tab-content">
+            <h1>Criação com IA</h1>
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="color: #8b949e;">A IA vai ler sua letra e criar a trilha sonora perfeita.</p>
+                <button onclick="alert('IA Analisando Vibe...')">GERAR COM IA</button>
             </div>
         </div>
 
@@ -157,18 +152,15 @@
 
     <script>
         function openTab(tabId) {
-            // Esconde todas as abas
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            // Esconde todas
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             
-            // Mostra a selecionada
+            // Mostra a certa
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
-
-        function simularIA() {
-            document.getElementById('ia-status').innerText = "Analisando métrica e sentimento... 🤖";
-        }
     </script>
+
 </body>
 </html>
