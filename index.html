@@ -3,113 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Keime AI</title>
+    <title>Conquistador Studio | Keime Producer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: #161b22;
-            border-bottom: 2px solid #00a2ff;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            z-index: 100;
-        }
-
-        .nav-item {
-            color: #8b949e;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: white; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .navbar { background-color: #161b22; border-bottom: 2px solid #00a2ff; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; }
+        .nav-item { color: #8b949e; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .nav-item.active { color: #00a2ff; }
-
-        /* Conteúdo */
         .content { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
-
-        .tab-content { 
-            display: none; 
-            width: 100%; 
-            height: 100%;
-            padding: 20px;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+        .tab-content { display: none; width: 100%; height: 100%; padding: 20px; flex-direction: column; overflow-y: auto; }
         .tab-content.active { display: flex; }
-
         h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
-
-        /* Compor */
-        textarea#texto-letra {
-            width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d;
-            border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none;
-        }
-
-        .btn-blue {
-            background: #00a2ff; color: white; border: none; padding: 15px;
-            border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer;
-        }
-
-        /* Biblioteca Cards */
+        textarea#texto-letra { width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none; }
+        .btn-blue { background: #00a2ff; color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer; }
         .music-card { background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00a2ff; }
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .header-info { display: flex; align-items: center; gap: 10px; }
-        .btn-delete { background: transparent; color: #f85149; border: none; cursor: pointer; font-size: 1.1rem; }
         .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
         .edit-area { width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; padding: 10px; margin-bottom: 10px; resize: none; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn-save-edit { background: #00a2ff; color: white; border: none; padding: 10px; border-radius: 5px; flex: 1; font-weight: bold; }
-        .btn-copy { background: #238636; color: white; border: none; padding: 10px; border-radius: 5px; flex: 1; font-weight: bold; }
-
-        /* Chat IA */
         #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
         .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
         .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; white-space: pre-wrap; }
         .msg.user { background: #00a2ff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        
-        .chat-input-area {
-            display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #30363d; background: #0d1117;
-        }
+        .chat-input-area { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #30363d; background: #0d1117; }
         .chat-input-area input { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 12px 20px; color: white; outline: none; }
         .btn-send { background: #00a2ff; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; cursor: pointer; }
-
-        /* Toasts e Modais */
         #custom-toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00a2ff; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; }
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
-        .modal-box { background: #1c2128; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="custom-toast"></div>
-    <div id="modal-overlay"><div class="modal-box"><p id="modal-text">Excluir música?</p><div class="btn-group" style="margin-top:20px"><button class="btn-blue" style="background:#30363d" onclick="fecharModal()">NÃO</button><button class="btn-blue" style="background:#f85149" id="confirm-del">SIM</button></div></div></div>
 
     <nav class="navbar">
         <div class="nav-item active" id="nav-compor" onclick="openTab('compor')"><span>📝</span><span>Compor</span></div>
         <div class="nav-item" id="nav-biblioteca" onclick="openTab('biblioteca')"><span>📂</span><span>Músicas</span></div>
-        <div class="nav-item" id="nav-ia" onclick="openTab('ia')"><span>⚡</span><span>Produção IA</span></div>
+        <div class="nav-item" id="nav-ia" onclick="openTab('ia')"><span>⚡</span><span>Keime Studio</span></div>
     </nav>
 
     <div class="content">
         <div id="compor" class="tab-content active">
             <h1>Novo Hit</h1>
-            <textarea id="texto-letra" placeholder="Escreva aqui..."></textarea>
+            <textarea id="texto-letra" placeholder="Finalize sua letra aqui..."></textarea>
             <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
         </div>
 
@@ -120,17 +54,18 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve! Eu sou o Keime. Qual a boa de hoje? Me fala o estilo ou o tema que a gente cria algo do zero! 🎨🎶</div>
+                <div class="msg ia">Salve! Sou o Keime, seu produtor. 🎧\n\nAntes de soltar a caneta, preciso entender a alma do seu som. Qual o ESTILO (Trap, Sertanejo, Rock...) e qual o SENTIMENTO que você quer passar hoje?</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Fala com o Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
+                <input type="text" id="chat-input" placeholder="Responda ao Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
     </div>
 
     <script>
-        let musicIdDel = null;
+        let etapaChat = 0;
+        let dadosMusica = { estilo: "", tema: "", detalhes: "" };
 
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -146,54 +81,6 @@
             setTimeout(() => t.style.display = 'none', 2500);
         }
 
-        function salvarNaBiblioteca() {
-            const campo = document.getElementById('texto-letra');
-            if (!campo.value.trim()) return;
-            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            musicas.unshift({ id: Date.now(), titulo: campo.value.split('\n')[0].substring(0, 20), letra: campo.value, data: new Date().toLocaleDateString('pt-BR') });
-            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-            campo.value = ""; mostrarToast("Salvo na Biblioteca! 🔥");
-        }
-
-        function renderizarBiblioteca() {
-            const container = document.getElementById('lista-musicas');
-            const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio...</p>';
-            musicas.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'music-card';
-                card.innerHTML = `<div class="card-header"><span onclick="toggleCard(this.parentElement.parentElement)">${m.titulo}</span><div class="header-info"><small>${m.data}</small><button class="btn-delete" onclick="abrirModal(${m.id})">🗑️</button></div></div>
-                <div class="card-body"><textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea><div class="btn-group"><button class="btn-save-edit" onclick="atualizarMusica(${m.id})">SALVAR</button><button class="btn-copy" onclick="copiarLetra(${m.id})">COPIAR</button></div></div>`;
-                container.appendChild(card);
-            });
-        }
-
-        function toggleCard(card) {
-            const body = card.querySelector('.card-body');
-            const isOpen = body.style.display === 'block';
-            document.querySelectorAll('.card-body').forEach(b => b.style.display = 'none');
-            body.style.display = isOpen ? 'none' : 'block';
-        }
-
-        function atualizarMusica(id) {
-            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas'));
-            const idx = musicas.findIndex(m => m.id === id);
-            musicas[idx].letra = document.getElementById(`edit-${id}`).value;
-            musicas[idx].titulo = musicas[idx].letra.split('\n')[0].substring(0, 20);
-            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-            mostrarToast("Atualizado! 📝"); renderizarBiblioteca();
-        }
-
-        function abrirModal(id) { musicIdDel = id; document.getElementById('modal-overlay').style.display = 'flex'; }
-        function fecharModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-        document.getElementById('confirm-del').onclick = () => {
-            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')).filter(m => m.id !== musicIdDel);
-            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-            fecharModal(); mostrarToast("Excluído! 🗑️"); renderizarBiblioteca();
-        };
-
-        function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
-
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-container');
@@ -207,26 +94,32 @@
             
             setTimeout(() => {
                 const iDiv = document.createElement('div'); iDiv.className = 'msg ia';
-                const texto = msgUser.toLowerCase();
                 let resposta = "";
 
-                // Inteligência Eclética do Keime
-                if (texto.includes("sertanejo") || texto.includes("sofrência")) {
-                    resposta = "Bora de modão! 🎸\n\n(Refrão)\nO copo tá cheio e o peito tá vazio\nA saudade dói e me causa arrepio\nTô num bar de esquina tentando esquecer\nQue a minha vida é amar você.\n\nEssa pegada mais apaixonada combina com o que você pensou?";
-                } else if (texto.includes("jazz") || texto.includes("suave") || texto.includes("blues")) {
-                    resposta = "Sinto a elegância no ar... 🎷\n\n(Verso)\nA cidade dorme sob a luz do luar\nAs notas deslizam, convidam a sonhar\nUm saxofone chora num canto qualquer\nA alma flutua no que a gente quer.\n\nFicou com um feeling legal?";
-                } else if (texto.includes("rock") || texto.includes("guitarra")) {
-                    resposta = "Aumenta o volume! 🤘\n\n(Intro)\n(Guitarras distorcidas)\nO asfalto queima sob os meus pés\nNão sigo as regras, não sigo as leis\nO grito no peito quer liberdade\nVivendo a mil nessa selva de cidade.\n\nQuer mais peso ou algo mais balada?";
-                } else if (texto.includes("funk") || texto.includes("baile")) {
-                    resposta = "O grave vai bater forte! 🔊\n\n(Refrão)\nNo toque do DJ o baile estremece\nA nossa vitória ninguém mais esquece\nDe nave no asfalto, visão de progresso\nO plano é perfeito e o foco é o sucesso.\n\nEssa é pra agitar a pista, hein?";
-                } else {
-                    // Resposta criativa genérica para evitar repetição
-                    const intros = ["Deixa eu ver o que saiu aqui...", "Mano, essa ideia me inspirou isso aqui:", "Foquei no seu sentimento e olha as rimas:", "O Keime tá on! Se liga nesse esboço:"];
-                    const letrasGerais = [
-                        "(Refrão)\nDias de luta pra colher a vitória\nEscrevendo a tinta a nossa história\nO tempo não para, eu sigo constante\nBrilhando mais forte que um diamante.",
-                        "(Verso)\nOlhei pro horizonte e vi meu destino\nO mundo é pequeno pro meu caminho\nSem olhar pra trás, sem medo da queda\nMinha mente é livre, ninguém me amordaça."
-                    ];
-                    resposta = escolher(intros) + "\n\n" + escolher(letrasGerais) + "\n\nO que achou desse início?";
+                if (etapaChat === 0) {
+                    dadosMusica.estilo = msgUser;
+                    resposta = "Entendi, a vibe é " + dadosMusica.estilo + ". Pesado! 🔥\n\nAgora me conta: Qual a HISTÓRIA por trás dessa música? Aconteceu algo ou é uma visão que você teve?";
+                    etapaChat = 1;
+                } else if (etapaChat === 1) {
+                    dadosMusica.tema = msgUser;
+                    resposta = "Tô sentindo o feeling... ✍️\n\nÚltima pergunta pra eu fechar o conceito: Você quer uma música pra AGITAR a galera ou algo mais PROFUNDO pra refletir?";
+                    etapaChat = 2;
+                } else if (etapaChat === 2) {
+                    dadosMusica.detalhes = msgUser;
+                    resposta = "Aulas! Já tenho tudo o que preciso. Vou conectar com a sua história e gerar o rascunho do seu próximo hit...\n\n(Processando sentimento...) 🚀";
+                    
+                    container.appendChild(iDiv);
+                    iDiv.innerText = resposta;
+                    
+                    setTimeout(() => {
+                        const hitDiv = document.createElement('div');
+                        hitDiv.className = 'msg ia';
+                        hitDiv.innerText = "AQUI ESTÁ SEU HIT (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica);
+                        container.appendChild(hitDiv);
+                        container.scrollTop = container.scrollHeight;
+                        etapaChat = 0; // Reseta para a próxima música
+                    }, 2000);
+                    return;
                 }
 
                 iDiv.innerText = resposta;
@@ -235,7 +128,49 @@
             }, 1000);
         }
 
-        function copiarLetra(id) { navigator.clipboard.writeText(document.getElementById(`edit-${id}`).value); mostrarToast("Copiado! 📋"); }
+        function gerarLetraDinamica(dados) {
+            const rimas = [
+                "(Refrão)\nO mundo gira e eu sigo focado\nO que passou ficou no passado\nCom a visão clara e o peito aberto\nO meu sucesso agora tá perto.",
+                "(Verso 1)\nNasci pra vencer, não aceito derrota\nA vida é um jogo e eu abro a porta\nCada cicatriz é uma lição aprendida\nSou o autor da minha própria vida.",
+                "(Final)\nKeime no beat, a alma no som\nTransformando o sonho em algo bom."
+            ];
+            return rimas.join("\n\n");
+        }
+
+        function salvarNaBiblioteca() {
+            const campo = document.getElementById('texto-letra');
+            if (!campo.value.trim()) return;
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            musicas.unshift({ id: Date.now(), titulo: campo.value.split('\n')[0].substring(0, 20), letra: campo.value, data: new Date().toLocaleDateString('pt-BR') });
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            campo.value = ""; mostrarToast("Hit Salvo! 🔥");
+        }
+
+        function renderizarBiblioteca() {
+            const container = document.getElementById('lista-musicas');
+            const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Biblioteca Vazia...</p>';
+            musicas.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'music-card';
+                card.innerHTML = `<div class="card-header" onclick="toggleCard(this.parentElement)"><span>${m.titulo}</span><small>${m.data}</small></div>
+                <div class="card-body"><textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea><button class="btn-blue" onclick="atualizarMusica(${m.id})">ATUALIZAR</button></div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleCard(card) {
+            const body = card.querySelector('.card-body');
+            body.style.display = body.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function atualizarMusica(id) {
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas'));
+            const idx = musicas.findIndex(m => m.id === id);
+            musicas[idx].letra = document.getElementById(`edit-${id}`).value;
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            mostrarToast("Atualizado! 📝");
+        }
     </script>
 </body>
 </html>
