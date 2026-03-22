@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Pro</title>
+    <title>Conquistador Studio | Edit Mode</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -64,21 +64,27 @@
         /* Cards da Biblioteca */
         .music-card {
             background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px;
-            border-left: 4px solid #00a2ff; cursor: pointer;
+            border-left: 4px solid #00a2ff; transition: 0.3s;
         }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 
         .card-body {
             display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d;
-            background: #0d1117; padding: 10px; border-radius: 5px; font-size: 0.9rem; color: #c9d1d9;
-            white-space: pre-wrap;
         }
 
-        .btn-copy {
-            background: #238636; color: white; border: none; padding: 8px;
-            border-radius: 5px; margin-top: 10px; cursor: pointer; font-size: 0.8rem; width: 100%;
+        /* Textarea de edição dentro do card */
+        .edit-area {
+            width: 100%; height: 200px; background: #0d1117; border: 1px solid #30363d;
+            border-radius: 8px; color: #c9d1d9; padding: 10px; font-size: 0.9rem; resize: none; outline: none;
+            margin-bottom: 10px;
         }
+        .edit-area:focus { border-color: #00a2ff; }
+
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn-save-edit { background: #00a2ff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
+        .btn-copy { background: #238636; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
 
         /* Modal de Aviso Customizado */
         #custom-alert {
@@ -165,17 +171,19 @@
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
             container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio por aqui...</p>';
 
-            musicas.forEach(m => {
+            musicas.forEach((m, index) => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
-                card.onclick = (e) => {
-                    if(e.target.tagName !== 'BUTTON') toggleCard(card);
-                };
                 card.innerHTML = `
-                    <div class="card-header"><span>${m.titulo}</span> <small>${m.data}</small></div>
+                    <div class="card-header" onclick="toggleCard(this.parentElement)">
+                        <span>${m.titulo}</span> <small>${m.data}</small>
+                    </div>
                     <div class="card-body">
-                        <div>${m.letra}</div>
-                        <button class="btn-copy" onclick="copiarLetra(\`${m.letra.replace(/`/g, '\\`')}\`)">COPIAR LETRA</button>
+                        <textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea>
+                        <div class="btn-group">
+                            <button class="btn-save-edit" onclick="atualizarMusica(${m.id})">SALVAR EDIÇÃO</button>
+                            <button class="btn-copy" onclick="copiarLetra(${m.id})">COPIAR</button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -185,13 +193,30 @@
         function toggleCard(card) {
             const body = card.querySelector('.card-body');
             const isOpen = body.style.display === 'block';
+            // Fecha outros abertos para não virar bagunça
             document.querySelectorAll('.card-body').forEach(b => b.style.display = 'none');
             body.style.display = isOpen ? 'none' : 'block';
         }
 
-        function copiarLetra(texto) {
+        function atualizarMusica(id) {
+            const novaLetra = document.getElementById(`edit-${id}`).value;
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            
+            const index = musicas.findIndex(m => m.id === id);
+            if (index !== -1) {
+                musicas[index].letra = novaLetra;
+                // Atualiza o título também caso a primeira linha tenha mudado
+                musicas[index].titulo = novaLetra.split('\n')[0].substring(0, 20);
+                localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+                mostrarAviso("Edição salva! 📝");
+                renderizarBiblioteca(); // Recarrega para mostrar o título novo
+            }
+        }
+
+        function copiarLetra(id) {
+            const texto = document.getElementById(`edit-${id}`).value;
             navigator.clipboard.writeText(texto);
-            mostrarAviso("Copiado para a área de transferência! 📋");
+            mostrarAviso("Copiado! 📋");
         }
     </script>
 </body>
