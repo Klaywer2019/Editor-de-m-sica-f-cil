@@ -68,7 +68,6 @@
         let modoEdicao = false;
         let dadosMusica = { estilo: "", tema: "", detalhes: "" };
 
-        // BANCO DE PERSONALIDADE PARA VARIAR AS RESPOSTAS
         const keimeDialetos = {
             gratidao: ["Tamo junto! É nois que voa. 👊", "Valeu pela moral, meu mano! 🚀", "Fico felizão que tá curtindo o trampo! ✨", "É o bonde! Vamos fazer história. 🔥"],
             entendido: ["Visão captada!", "Aulas, entendi a fita.", "Pode crer, tô na mesma frequência.", "Anotado! O plano tá ficando brabo."],
@@ -107,14 +106,27 @@
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                // 1. CHECAGEM DE INTERRUPÇÃO (QUER ARRUMAR ALGO?)
+                // 1. LÓGICA DE LOCALIZAÇÃO (Onde arrumar?)
                 const termosRevisao = ["arrumar", "ajeitar", "mudar", "corrigir", "melhorar", "muda", "ajeita", "troca"];
+                const partesMusica = ["refrão", "refrao", "verso", "ponte", "intro", "final", "começo", "letra"];
+                
                 const querRevisar = termosRevisao.some(p => texto.includes(p));
+                const parteEspecifica = partesMusica.find(p => texto.includes(p));
 
-                if(querRevisar) {
+                if(querRevisar || modoEdicao) {
                     modoEdicao = true;
-                    etapaChat = -1; // Pausa a entrevista se estiver ocorrendo
-                    resposta = escolher(keimeDialetos.revisao);
+                    etapaChat = -1; 
+
+                    if (parteEspecifica) {
+                        resposta = `Visão total! Bora mexer nesse **${parteEspecifica}**. O que você sentiu que não encaixou? Manda a ideia ou deixa que eu sugiro algo pesado.`;
+                    } else if (texto.match(/(tá ruim|não gostei|muda tudo|melhora)/)) {
+                        resposta = "Sem crise! No estúdio é assim mesmo, a gente vai lapidando até ficar nota 10. O que você quer mudar primeiro?";
+                    } else if (texto.length > 15) {
+                        resposta = "Saquei o ajuste! Se liga nessa visão que eu tive pra esse trecho:\n\n\"" + msgUser + " (Versão Keime Studio)\"\n\nFicou mais pesado assim ou quer tentar outro caminho?";
+                    } else {
+                        resposta = escolher(keimeDialetos.revisao);
+                    }
+
                     iDiv.innerText = resposta;
                     container.appendChild(iDiv);
                     container.scrollTop = container.scrollHeight;
@@ -126,10 +138,8 @@
                 const ehElogio = elogios.some(p => texto.includes(p));
                 let grato = ehElogio ? escolher(keimeDialetos.gratidao) + "\n\n" : "";
 
-                // 3. FLUXO DE RESPOSTA
-                if(modoEdicao) {
-                    resposta = "Saquei o ajuste! Se liga nessa visão que eu tive pra isso:\n\n\"" + msgUser + " (Versão Keime Studio)\"\n\nFicou mais pesado assim ou quer mexer mais?";
-                } else if (etapaChat === 0) {
+                // 3. FLUXO NORMAL (ENTREVISTA)
+                if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
                     resposta = grato + escolher(keimeDialetos.entendido) + " O estilo é " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás dessa música?";
                     etapaChat = 1;
@@ -144,10 +154,10 @@
                     container.appendChild(iDiv);
                     setTimeout(() => {
                         const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ O RASCUNHO (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica) + "\n\nCurtiu a pegada ou quer ajeitar algo?";
+                        hitDiv.innerText = "AQUI ESTÁ O RASCUNHO (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica) + "\n\nSe quiser arrumar o refrão ou algum verso, só me dar o salve!";
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
-                        etapaChat = 0; // Reseta para nova música
+                        etapaChat = 0; 
                     }, 2000);
                     return;
                 } else {
@@ -161,7 +171,7 @@
         }
 
         function gerarLetraDinamica(dados) {
-            return "(Refrão)\nO tempo voa e eu não fico parado\nConstruindo o futuro, honrando o passado\n(Verso)\nMinha caneta é o pincel do destino\nFaço a trilha do meu próprio caminho.";
+            return "(Refrão)\nO tempo voa e eu não fico parado\nConstruindo o futuro, honrando o passado\n\n(Verso)\nMinha caneta é o pincel do destino\nFaço a trilha do meu próprio caminho.";
         }
 
         function salvarNaBiblioteca() {
