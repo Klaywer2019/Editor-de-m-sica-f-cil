@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Top Menu</title>
+    <title>Conquistador Studio | Pro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -16,7 +16,7 @@
             height: 100vh;
         }
 
-        /* Menu Superior (Navbar) */
+        /* Navbar */
         .navbar {
             background-color: #161b22;
             border-bottom: 2px solid #00a2ff;
@@ -32,7 +32,6 @@
             color: #8b949e;
             font-size: 0.9rem;
             font-weight: bold;
-            text-decoration: none;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
@@ -41,183 +40,159 @@
             gap: 5px;
         }
 
-        .nav-item:hover, .nav-item.active {
-            color: #00a2ff;
-        }
+        .nav-item:hover, .nav-item.active { color: #00a2ff; }
 
-        /* Área de Conteúdo */
-        .content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* Conteúdo */
+        .content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
 
-        .tab-content {
-            display: none;
-            width: 100%;
-            max-width: 600px;
-        }
+        .tab-content { display: none; width: 100%; max-width: 600px; }
+        .tab-content.active { display: block; }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Estilo da área de composição */
         h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
 
         textarea {
-            width: 100%;
-            height: 350px;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            color: white;
-            padding: 15px;
-            font-size: 1rem;
-            resize: none;
-            outline: none;
+            width: 100%; height: 350px; background: #161b22; border: 1px solid #30363d;
+            border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none;
         }
-
         textarea:focus { border-color: #00a2ff; }
 
-        button {
-            background: #00a2ff;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            font-size: 1rem;
+        .btn-blue {
+            background: #00a2ff; color: white; border: none; padding: 15px;
+            border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem;
         }
 
-        button:active { transform: scale(0.98); }
-
-        /* Lista de Músicas */
+        /* Cards da Biblioteca */
         .music-card {
-            background: #1c2128;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #00a2ff;
+            background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px;
+            border-left: 4px solid #00a2ff; cursor: pointer;
         }
 
-        .empty-msg { color: #8b949e; text-align: center; margin-top: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+
+        .card-body {
+            display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d;
+            background: #0d1117; padding: 10px; border-radius: 5px; font-size: 0.9rem; color: #c9d1d9;
+            white-space: pre-wrap;
+        }
+
+        .btn-copy {
+            background: #238636; color: white; border: none; padding: 8px;
+            border-radius: 5px; margin-top: 10px; cursor: pointer; font-size: 0.8rem; width: 100%;
+        }
+
+        /* Modal de Aviso Customizado */
+        #custom-alert {
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #00a2ff; color: white; padding: 15px 30px; border-radius: 50px;
+            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000;
+        }
 
     </style>
 </head>
 <body>
 
+    <div id="custom-alert">Música salva com sucesso! 🔥</div>
+
     <nav class="navbar">
         <div class="nav-item active" id="nav-compor" onclick="openTab('compor')">
-            <span>📝</span>
-            <span>Compor</span>
+            <span>📝</span><span>Compor</span>
         </div>
         <div class="nav-item" id="nav-biblioteca" onclick="openTab('biblioteca')">
-            <span>📂</span>
-            <span>Músicas</span>
+            <span>📂</span><span>Músicas</span>
         </div>
         <div class="nav-item" id="nav-ia" onclick="openTab('ia')">
-            <span>⚡</span>
-            <span>Produção IA</span>
+            <span>⚡</span><span>Produção IA</span>
         </div>
     </nav>
 
     <div class="content">
-        
         <div id="compor" class="tab-content active">
             <h1>Novo Hit</h1>
             <textarea id="texto-letra" placeholder="Escreva sua letra aqui..."></textarea>
-            <button onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
+            <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
         </div>
 
         <div id="biblioteca" class="tab-content">
             <h1>Minhas Pastas</h1>
-            <div id="lista-musicas">
-                </div>
+            <div id="lista-musicas"></div>
         </div>
 
         <div id="ia" class="tab-content">
             <h1>Criação com IA</h1>
             <div style="text-align: center; margin-top: 20px;">
                 <p style="color: #8b949e;">A IA vai ler sua letra e criar a trilha sonora perfeita.</p>
-                <button onclick="alert('IA Analisando Vibe...')">GERAR COM IA</button>
+                <button class="btn-blue" onclick="mostrarAviso('Analisando Vibe... 🎧')">GERAR COM IA</button>
             </div>
         </div>
-
     </div>
 
     <script>
-        // Função para trocar de aba
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
-
-            if(tabId === 'biblioteca') {
-                renderizarBiblioteca();
-            }
+            if(tabId === 'biblioteca') renderizarBiblioteca();
         }
 
-        // Função para salvar no LocalStorage
+        function mostrarAviso(msg) {
+            const alertBox = document.getElementById('custom-alert');
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+        }
+
         function salvarNaBiblioteca() {
-            const campoTexto = document.getElementById('texto-letra');
-            const letra = campoTexto.value;
+            const campo = document.getElementById('texto-letra');
+            if (campo.value.trim() === "") return;
 
-            if (letra.trim() === "") {
-                alert("Escreve alguma coisa antes de salvar, mano!");
-                return;
-            }
+            const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            const nova = {
+                id: Date.now(),
+                titulo: campo.value.split('\n')[0].substring(0, 20),
+                letra: campo.value,
+                data: new Date().toLocaleDateString('pt-BR')
+            };
 
-            // Pega a primeira linha como título
-            const titulo = letra.split('\n')[0].substring(0, 20) || "Sem título";
-            const data = new Date().toLocaleDateString('pt-BR');
-
-            const novaMusica = { titulo, letra, data };
-
-            // Busca músicas já salvas
-            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            musicas.unshift(novaMusica); // Adiciona no início da lista
-
-            // Salva de volta
+            musicas.unshift(nova);
             localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-
-            alert("Música salva com sucesso! 🔥");
-            campoTexto.value = ""; // Limpa para a próxima
+            campo.value = "";
+            mostrarAviso("Música salva com sucesso! 🔥");
         }
 
-        // Função para mostrar as músicas na tela
         function renderizarBiblioteca() {
             const container = document.getElementById('lista-musicas');
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-
-            container.innerHTML = "";
-
-            if (musicas.length === 0) {
-                container.innerHTML = '<p class="empty-msg">Sua biblioteca está vazia. Vá em "Compor"!</p>';
-                return;
-            }
+            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio por aqui...</p>';
 
             musicas.forEach(m => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
-                card.innerHTML = `<span>${m.titulo}</span> <small>${m.data}</small>`;
+                card.onclick = (e) => {
+                    if(e.target.tagName !== 'BUTTON') toggleCard(card);
+                };
+                card.innerHTML = `
+                    <div class="card-header"><span>${m.titulo}</span> <small>${m.data}</small></div>
+                    <div class="card-body">
+                        <div>${m.letra}</div>
+                        <button class="btn-copy" onclick="copiarLetra(\`${m.letra.replace(/`/g, '\\`')}\`)">COPIAR LETRA</button>
+                    </div>
+                `;
                 container.appendChild(card);
             });
         }
 
-        // Carrega a biblioteca ao iniciar caso já esteja nela
-        renderizarBiblioteca();
-    </script>
+        function toggleCard(card) {
+            const body = card.querySelector('.card-body');
+            const isOpen = body.style.display === 'block';
+            document.querySelectorAll('.card-body').forEach(b => b.style.display = 'none');
+            body.style.display = isOpen ? 'none' : 'block';
+        }
 
+        function copiarLetra(texto) {
+            navigator.clipboard.writeText(texto);
+            mostrarAviso("Copiado para a área de transferência! 📋");
+        }
+    </script>
 </body>
 </html>
