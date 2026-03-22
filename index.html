@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Creative AI</title>
+    <title>Conquistador Studio | Keime AI</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -109,7 +109,7 @@
     <div class="content">
         <div id="compor" class="tab-content active">
             <h1>Novo Hit</h1>
-            <textarea id="texto-letra" placeholder="Manda a letra aqui..."></textarea>
+            <textarea id="texto-letra" placeholder="Escreva aqui..."></textarea>
             <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
         </div>
 
@@ -120,10 +120,10 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">E aí, qual a visão de hoje? Manda a letra, o tema ou só o sentimento que a gente transforma em hit! 🚀🔥</div>
+                <div class="msg ia">Salve! Eu sou o Keime. Qual a boa de hoje? Me fala o estilo ou o tema que a gente cria algo do zero! 🎨🎶</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ideia para o hit..." onkeypress="if(event.key==='Enter')enviarMensagem()">
+                <input type="text" id="chat-input" placeholder="Fala com o Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
@@ -192,41 +192,45 @@
             fecharModal(); mostrarToast("Excluído! 🗑️"); renderizarBiblioteca();
         };
 
+        function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-container');
-            const textoUser = input.value.trim();
-            
-            if(!textoUser) return;
+            const msgUser = input.value.trim();
+            if(!msgUser) return;
 
-            const uM = document.createElement('div'); uM.className = 'msg user'; uM.innerText = textoUser;
-            container.appendChild(uM); 
+            const uDiv = document.createElement('div'); uDiv.className = 'msg user'; uDiv.innerText = msgUser;
+            container.appendChild(uDiv); 
             input.value = "";
             container.scrollTop = container.scrollHeight;
             
             setTimeout(() => {
-                const iM = document.createElement('div'); iM.className = 'msg ia';
-                
-                // LÓGICA DE PERSONALIDADE CRIATIVA
-                const saudar = ["Slc, essa visão é braba!", "Aulas! Já visualizei o beat.", "Pode deixar comigo, essa aqui vai pro topo.", "Mano, essa ideia tem muito feeling.", "Foco total, vamos lapidar isso agora!"];
-                const frasesMeio = ["Sente essa letra que montei pra gente:", "Já comecei a escrever as primeiras rimas aqui:", "Se liga nesse esboço de composição:", "Dá um check nesse rascunho que saiu agora:"];
+                const iDiv = document.createElement('div'); iDiv.className = 'msg ia';
+                const texto = msgUser.toLowerCase();
+                let resposta = "";
 
-                const letras = [
-                    "(Refrão)\nOnde o mundo gira, eu faço o meu caminho\nNo brilho da city, nunca tô sozinho\nA visão tá clara, o plano é vencer\nFocado no topo, nada a perder.",
-                    "(Verso)\nAcordei com a mente blindada pro jogo\nTransformando em ouro tudo o que é novo\nO passo é firme, a sola não gasta\nSou Conquistador, o resto se afasta.",
-                    "(Ponte)\nEles tentaram me segurar, mas eu voei alto\nSaí do silêncio, fiz barulho no asfalto\nMinha letra é caneta, meu som é o escudo\nNessa batida, eu domino tudo."
-                ];
+                // Inteligência Eclética do Keime
+                if (texto.includes("sertanejo") || texto.includes("sofrência")) {
+                    resposta = "Bora de modão! 🎸\n\n(Refrão)\nO copo tá cheio e o peito tá vazio\nA saudade dói e me causa arrepio\nTô num bar de esquina tentando esquecer\nQue a minha vida é amar você.\n\nEssa pegada mais apaixonada combina com o que você pensou?";
+                } else if (texto.includes("jazz") || texto.includes("suave") || texto.includes("blues")) {
+                    resposta = "Sinto a elegância no ar... 🎷\n\n(Verso)\nA cidade dorme sob a luz do luar\nAs notas deslizam, convidam a sonhar\nUm saxofone chora num canto qualquer\nA alma flutua no que a gente quer.\n\nFicou com um feeling legal?";
+                } else if (texto.includes("rock") || texto.includes("guitarra")) {
+                    resposta = "Aumenta o volume! 🤘\n\n(Intro)\n(Guitarras distorcidas)\nO asfalto queima sob os meus pés\nNão sigo as regras, não sigo as leis\nO grito no peito quer liberdade\nVivendo a mil nessa selva de cidade.\n\nQuer mais peso ou algo mais balada?";
+                } else if (texto.includes("funk") || texto.includes("baile")) {
+                    resposta = "O grave vai bater forte! 🔊\n\n(Refrão)\nNo toque do DJ o baile estremece\nA nossa vitória ninguém mais esquece\nDe nave no asfalto, visão de progresso\nO plano é perfeito e o foco é o sucesso.\n\nEssa é pra agitar a pista, hein?";
+                } else {
+                    // Resposta criativa genérica para evitar repetição
+                    const intros = ["Deixa eu ver o que saiu aqui...", "Mano, essa ideia me inspirou isso aqui:", "Foquei no seu sentimento e olha as rimas:", "O Keime tá on! Se liga nesse esboço:"];
+                    const letrasGerais = [
+                        "(Refrão)\nDias de luta pra colher a vitória\nEscrevendo a tinta a nossa história\nO tempo não para, eu sigo constante\nBrilhando mais forte que um diamante.",
+                        "(Verso)\nOlhei pro horizonte e vi meu destino\nO mundo é pequeno pro meu caminho\nSem olhar pra trás, sem medo da queda\nMinha mente é livre, ninguém me amordaça."
+                    ];
+                    resposta = escolher(intros) + "\n\n" + escolher(letrasGerais) + "\n\nO que achou desse início?";
+                }
 
-                const final = ["O que achou desse começo?", "Quer que eu mude a pegada ou siga nessa linha?", "Se curtiu, a gente pode puxar pro refrão agora.", "Diz aí, ficou na vibe que você queria?"];
-
-                // Montando a resposta sem repetir o usuário
-                const r1 = saudar[Math.floor(Math.random() * saudar.length)];
-                const r2 = frasesMeio[Math.floor(Math.random() * frasesMeio.length)];
-                const r3 = letras[Math.floor(Math.random() * letras.length)];
-                const r4 = final[Math.floor(Math.random() * final.length)];
-
-                iM.innerText = `${r1}\n\n${r2}\n\n${r3}\n\n${r4}`;
-                container.appendChild(iM); 
+                iDiv.innerText = resposta;
+                container.appendChild(iDiv); 
                 container.scrollTop = container.scrollHeight;
             }, 1000);
         }
