@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Edit & Delete</title>
+    <title>Conquistador Studio | Pro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Navbar */
@@ -64,48 +65,70 @@
         /* Cards da Biblioteca */
         .music-card {
             background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px;
-            border-left: 4px solid #00a2ff; transition: 0.3s;
+            border-left: 4px solid #00a2ff;
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-
         .header-info { display: flex; align-items: center; gap: 10px; }
 
         .btn-delete {
             background: transparent; color: #f85149; border: none; cursor: pointer;
-            font-size: 1.1rem; padding: 5px; border-radius: 5px; transition: 0.2s;
-        }
-        .btn-delete:hover { background: rgba(248, 81, 73, 0.1); }
-
-        .card-body {
-            display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d;
+            font-size: 1.1rem; padding: 5px;
         }
 
-        /* Textarea de edição dentro do card */
+        .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
+
         .edit-area {
             width: 100%; height: 200px; background: #0d1117; border: 1px solid #30363d;
             border-radius: 8px; color: #c9d1d9; padding: 10px; font-size: 0.9rem; resize: none; outline: none;
             margin-bottom: 10px;
         }
-        .edit-area:focus { border-color: #00a2ff; }
 
         .btn-group { display: flex; gap: 10px; }
-        
         .btn-save-edit { background: #00a2ff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
         .btn-copy { background: #238636; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
 
-        /* Modal de Aviso Customizado */
-        #custom-alert {
+        /* AVISOS E MODAIS CUSTOMIZADOS */
+        #custom-toast {
             display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #00a2ff; color: white; padding: 15px 30px; border-radius: 50px;
-            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000;
+            background: #00a2ff; color: white; padding: 12px 25px; border-radius: 50px;
+            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2000;
+            animation: slideDown 0.3s ease-out;
         }
+
+        #custom-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center;
+        }
+
+        .modal-box {
+            background: #1c2128; padding: 25px; border-radius: 15px; border: 1px solid #30363d;
+            width: 90%; max-width: 400px; text-align: center;
+        }
+
+        .modal-box p { margin-bottom: 20px; font-size: 1.1rem; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .btn-modal { padding: 12px; border-radius: 8px; border: none; cursor: pointer; flex: 1; font-weight: bold; }
+        .btn-cancel { background: #30363d; color: white; }
+        .btn-confirm { background: #f85149; color: white; }
+
+        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <div id="custom-alert">Música salva com sucesso! 🔥</div>
+    <div id="custom-toast"></div>
+
+    <div id="custom-modal-overlay">
+        <div class="modal-box">
+            <p id="modal-text">Deseja realmente fazer isso?</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="fecharModal()">CANCELAR</button>
+                <button class="btn-modal btn-confirm" id="confirm-action">EXCLUIR</button>
+            </div>
+        </div>
+    </div>
 
     <nav class="navbar">
         <div class="nav-item active" id="nav-compor" onclick="openTab('compor')">
@@ -133,14 +156,13 @@
 
         <div id="ia" class="tab-content">
             <h1>Criação com IA</h1>
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="color: #8b949e;">A IA vai ler sua letra e criar a trilha sonora perfeita.</p>
-                <button class="btn-blue" onclick="mostrarAviso('Analisando Vibe... 🎧')">GERAR COM IA</button>
-            </div>
+            <p style="text-align: center; color: #8b949e; margin-top: 20px;">Em breve: A IA vai ler sua letra e sugerir o melhor estilo musical.</p>
         </div>
     </div>
 
     <script>
+        let musicIdParaDeletar = null;
+
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -149,37 +171,56 @@
             if(tabId === 'biblioteca') renderizarBiblioteca();
         }
 
-        function mostrarAviso(msg) {
-            const alertBox = document.getElementById('custom-alert');
-            alertBox.innerText = msg;
-            alertBox.style.display = 'block';
-            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+        function mostrarToast(msg) {
+            const toast = document.getElementById('custom-toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
         }
+
+        function abrirModal(id) {
+            musicIdParaDeletar = id;
+            document.getElementById('custom-modal-overlay').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('custom-modal-overlay').style.display = 'none';
+            musicIdParaDeletar = null;
+        }
+
+        document.getElementById('confirm-action').onclick = function() {
+            if(musicIdParaDeletar) {
+                let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+                musicas = musicas.filter(m => m.id !== musicIdParaDeletar);
+                localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+                fecharModal();
+                mostrarToast("Música excluída! 🗑️");
+                renderizarBiblioteca();
+            }
+        };
 
         function salvarNaBiblioteca() {
             const campo = document.getElementById('texto-letra');
-            if (campo.value.trim() === "") return;
-
+            if (!campo.value.trim()) return;
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
             const nova = {
                 id: Date.now(),
-                titulo: campo.value.split('\n')[0].substring(0, 20),
+                titulo: campo.value.split('\n')[0].substring(0, 20) || "Sem título",
                 letra: campo.value,
                 data: new Date().toLocaleDateString('pt-BR')
             };
-
             musicas.unshift(nova);
             localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
             campo.value = "";
-            mostrarAviso("Música salva com sucesso! 🔥");
+            mostrarToast("Música salva com sucesso! 🔥");
         }
 
         function renderizarBiblioteca() {
             const container = document.getElementById('lista-musicas');
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio por aqui...</p>';
+            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Nenhuma música salva.</p>';
 
-            musicas.forEach((m) => {
+            musicas.forEach(m => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
                 card.innerHTML = `
@@ -187,13 +228,13 @@
                         <span onclick="toggleCard(this.parentElement.parentElement)">${m.titulo}</span>
                         <div class="header-info">
                             <small>${m.data}</small>
-                            <button class="btn-delete" onclick="deletarMusica(${m.id})">🗑️</button>
+                            <button class="btn-delete" onclick="abrirModal(${m.id})">🗑️</button>
                         </div>
                     </div>
                     <div class="card-body">
                         <textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea>
                         <div class="btn-group">
-                            <button class="btn-save-edit" onclick="atualizarMusica(${m.id})">SALVAR EDIÇÃO</button>
+                            <button class="btn-save-edit" onclick="atualizarMusica(${m.id})">SALVAR</button>
                             <button class="btn-copy" onclick="copiarLetra(${m.id})">COPIAR</button>
                         </div>
                     </div>
@@ -212,23 +253,12 @@
         function atualizarMusica(id) {
             const novaLetra = document.getElementById(`edit-${id}`).value;
             let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            
-            const index = musicas.findIndex(m => m.id === id);
-            if (index !== -1) {
-                musicas[index].letra = novaLetra;
-                musicas[index].titulo = novaLetra.split('\n')[0].substring(0, 20);
+            const idx = musicas.findIndex(m => m.id === id);
+            if (idx !== -1) {
+                musicas[idx].letra = novaLetra;
+                musicas[idx].titulo = novaLetra.split('\n')[0].substring(0, 20);
                 localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-                mostrarAviso("Edição salva! 📝");
-                renderizarBiblioteca();
-            }
-        }
-
-        function deletarMusica(id) {
-            if(confirm("Deseja realmente excluir esta música?")) {
-                let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-                musicas = musicas.filter(m => m.id !== id);
-                localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-                mostrarAviso("Música excluída! 🗑️");
+                mostrarToast("Alterações salvas! 📝");
                 renderizarBiblioteca();
             }
         }
@@ -236,7 +266,7 @@
         function copiarLetra(id) {
             const texto = document.getElementById(`edit-${id}`).value;
             navigator.clipboard.writeText(texto);
-            mostrarAviso("Copiado! 📋");
+            mostrarToast("Copiado! 📋");
         }
     </script>
 </body>
