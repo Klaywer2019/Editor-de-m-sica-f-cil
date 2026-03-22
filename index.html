@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | Edit Mode</title>
+    <title>Conquistador Studio | Edit & Delete</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -68,6 +68,14 @@
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+        .header-info { display: flex; align-items: center; gap: 10px; }
+
+        .btn-delete {
+            background: transparent; color: #f85149; border: none; cursor: pointer;
+            font-size: 1.1rem; padding: 5px; border-radius: 5px; transition: 0.2s;
+        }
+        .btn-delete:hover { background: rgba(248, 81, 73, 0.1); }
 
         .card-body {
             display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d;
@@ -171,12 +179,16 @@
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
             container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio por aqui...</p>';
 
-            musicas.forEach((m, index) => {
+            musicas.forEach((m) => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
                 card.innerHTML = `
-                    <div class="card-header" onclick="toggleCard(this.parentElement)">
-                        <span>${m.titulo}</span> <small>${m.data}</small>
+                    <div class="card-header">
+                        <span onclick="toggleCard(this.parentElement.parentElement)">${m.titulo}</span>
+                        <div class="header-info">
+                            <small>${m.data}</small>
+                            <button class="btn-delete" onclick="deletarMusica(${m.id})">🗑️</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea>
@@ -193,7 +205,6 @@
         function toggleCard(card) {
             const body = card.querySelector('.card-body');
             const isOpen = body.style.display === 'block';
-            // Fecha outros abertos para não virar bagunça
             document.querySelectorAll('.card-body').forEach(b => b.style.display = 'none');
             body.style.display = isOpen ? 'none' : 'block';
         }
@@ -205,11 +216,20 @@
             const index = musicas.findIndex(m => m.id === id);
             if (index !== -1) {
                 musicas[index].letra = novaLetra;
-                // Atualiza o título também caso a primeira linha tenha mudado
                 musicas[index].titulo = novaLetra.split('\n')[0].substring(0, 20);
                 localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
                 mostrarAviso("Edição salva! 📝");
-                renderizarBiblioteca(); // Recarrega para mostrar o título novo
+                renderizarBiblioteca();
+            }
+        }
+
+        function deletarMusica(id) {
+            if(confirm("Deseja realmente excluir esta música?")) {
+                let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+                musicas = musicas.filter(m => m.id !== id);
+                localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+                mostrarAviso("Música excluída! 🗑️");
+                renderizarBiblioteca();
             }
         }
 
