@@ -17,7 +17,7 @@
         textarea#texto-letra { width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none; }
         .btn-blue { background: #00a2ff; color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer; }
         .music-card { background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00a2ff; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; }
         .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
         .edit-area { width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; padding: 10px; margin-bottom: 10px; resize: none; }
         #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
@@ -95,21 +95,37 @@
             setTimeout(() => {
                 const iDiv = document.createElement('div'); iDiv.className = 'msg ia';
                 let resposta = "";
+                const texto = msgUser.toLowerCase();
+
+                // LÓGICA DE ELOGIOS E HUMOR
+                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora", "melhor", "amei", "gostei"];
+                const ehElogio = elogios.some(p => texto.includes(p));
+                let grato = "";
+
+                if(ehElogio) {
+                    const falas = [
+                        "Tamo junto! É nois que voa. 👊",
+                        "Valeu pela moral, meu mano! 🚀",
+                        "Fico felizão que tá curtindo o trampo! ✨",
+                        "É o bonde! Vamos fazer história. 🔥"
+                    ];
+                    grato = falas[Math.floor(Math.random() * falas.length)] + "\n\nMas ó, focando aqui... ";
+                }
 
                 if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = "Entendi, a vibe é " + dadosMusica.estilo + ". Pesado! 🔥\n\nAgora me conta: Qual a HISTÓRIA por trás dessa música? Aconteceu algo ou é uma visão que você teve?";
+                    resposta = (grato || "") + "Entendi, a vibe é " + dadosMusica.estilo + ". Pesado! 🔥\n\nAgora me conta: Qual a HISTÓRIA por trás dessa música?";
                     etapaChat = 1;
                 } else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = "Tô sentindo o feeling... ✍️\n\nÚltima pergunta pra eu fechar o conceito: Você quer uma música pra AGITAR a galera ou algo mais PROFUNDO pra refletir?";
+                    resposta = (grato || "") + "Tô sentindo o feeling... ✍️\n\nÚltima pergunta: Você quer uma música pra AGITAR ou algo mais PROFUNDO?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
                     dadosMusica.detalhes = msgUser;
-                    resposta = "Aulas! Já tenho tudo o que preciso. Vou conectar com a sua história e gerar o rascunho do seu próximo hit...\n\n(Processando sentimento...) 🚀";
+                    resposta = (grato || "") + "Aulas! Já tenho tudo. Vou soltar a caneta...\n\n(Processando sentimento...) 🚀";
                     
-                    container.appendChild(iDiv);
                     iDiv.innerText = resposta;
+                    container.appendChild(iDiv);
                     
                     setTimeout(() => {
                         const hitDiv = document.createElement('div');
@@ -117,7 +133,7 @@
                         hitDiv.innerText = "AQUI ESTÁ SEU HIT (" + dadosMusica.estilo.toUpperCase() + "):\n\n" + gerarLetraDinamica(dadosMusica);
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
-                        etapaChat = 0; // Reseta para a próxima música
+                        etapaChat = 0;
                     }, 2000);
                     return;
                 }
@@ -129,12 +145,16 @@
         }
 
         function gerarLetraDinamica(dados) {
-            const rimas = [
-                "(Refrão)\nO mundo gira e eu sigo focado\nO que passou ficou no passado\nCom a visão clara e o peito aberto\nO meu sucesso agora tá perto.",
-                "(Verso 1)\nNasci pra vencer, não aceito derrota\nA vida é um jogo e eu abro a porta\nCada cicatriz é uma lição aprendida\nSou o autor da minha própria vida.",
-                "(Final)\nKeime no beat, a alma no som\nTransformando o sonho em algo bom."
-            ];
-            return rimas.join("\n\n");
+            // Pequena variação baseada no estilo
+            const est = dados.estilo.toLowerCase();
+            if(est.includes("sertanejo") || est.includes("sofrência")) {
+                return "(Refrão)\nO copo tá cheio, o peito tá vazio\nA saudade dói e me causa arrepio\nTô no bar de sempre tentando esquecer\nQue a minha vida é amar você.";
+            }
+            if(est.includes("rock")) {
+                return "(Intro/Solo)\nO asfalto queima sob os meus pés\nNão sigo as regras, não sigo as leis\nO grito no peito quer liberdade\nVivendo a mil nessa cidade.";
+            }
+            // Padrão (Trap/Rap/Geral)
+            return "(Refrão)\nO mundo gira e eu sigo focado\nO que passou ficou no passado\nCom a visão clara e o peito aberto\nO meu sucesso agora tá perto.\n\n(Verso)\nNasci pra vencer, não aceito derrota\nA vida é um jogo e eu abro a porta.";
         }
 
         function salvarNaBiblioteca() {
