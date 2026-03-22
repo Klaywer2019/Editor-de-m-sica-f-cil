@@ -79,8 +79,8 @@
 
         /* Chat IA */
         #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; }
-        .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
+        .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; white-space: pre-wrap; }
         .msg.user { background: #00a2ff; align-self: flex-end; border-bottom-right-radius: 4px; }
         
         .chat-input-area {
@@ -120,7 +120,7 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve! Qual a vibe de hoje? 🚀</div>
+                <div class="msg ia">Salve, meu mano! Sou seu parceiro de estúdio. Me manda uma ideia ou um tema que eu já mando um rascunho de hit pra gente amassar! 🔥🚀</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Fala com a IA..." onkeypress="if(event.key==='Enter')enviarMensagem()">
@@ -195,18 +195,33 @@
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-container');
-            if(!input.value.trim()) return;
-            const uM = document.createElement('div'); uM.className = 'msg user'; uM.innerText = input.value;
+            const textoUser = input.value.trim();
+            
+            if(!textoUser) return;
+
+            const uM = document.createElement('div'); uM.className = 'msg user'; uM.innerText = textoUser;
             container.appendChild(uM); 
-            const txt = input.value.toLowerCase(); input.value = "";
-            container.scrollTop = container.scrollHeight; // RESOLVE O TRAVAMENTO (SCROLL)
+            input.value = "";
+            container.scrollTop = container.scrollHeight;
             
             setTimeout(() => {
                 const iM = document.createElement('div'); iM.className = 'msg ia';
-                const falas = ["Boa!", "Ficou pesado!", "Tô na área!", "Bora produzir! 🔥"];
-                iM.innerText = falas[Math.floor(Math.random()*falas.length)] + " Quer focar no grave ou na letra?";
-                container.appendChild(iM); container.scrollTop = container.scrollHeight;
-            }, 800);
+                
+                const saudar = ["Slc, essa visão é braba!", "Aulas! Curti o tema.", "Tô sentindo a energia daqui!", "Bora pra cima!", "Essa vai ser hit, pode anotar! 🔥"];
+                const saudaAleatoria = saudar[Math.floor(Math.random() * saudar.length)];
+
+                const rascunhos = [
+                    `${saudaAleatoria} Olha esse rascunho pra "${textoUser}":\n\n(Refrão)\nNo brilho da city, eu busco o meu lugar\nCom a visão de cria, ninguém vai me parar\nNotas no bolso e a mente no topo\nO plano tá traçado, eu sou o novo foco.\n\nO que achou dessa linha?`,
+                    
+                    `${saudaAleatoria} Pra esse tema de "${textoUser}", pensei nessa letra:\n\n(Verso)\nAcordei focado, o plano tá traçado\nDeixando pra trás tudo o que foi errado\nHoje o mundo gira no meu compasso\nConquistador nato, eu nunca me canso.\n\nQuer que eu mude o ritmo?`,
+                    
+                    `${saudaAleatoria} Se liga nesse esboço pra "${textoUser}":\n\n(Intro)\n(Grave batendo forte...)\nEles falaram que eu não ia conseguir\nMas olha pra mim, eu ainda tô aqui\nMinha história eu mesmo escrevo\nTransformando em ouro tudo o que eu vejo.\n\nQualquer ajuste é só falar!`
+                ];
+
+                iM.innerText = rascunhos[Math.floor(Math.random() * rascunhos.length)];
+                container.appendChild(iM); 
+                container.scrollTop = container.scrollHeight;
+            }, 1000);
         }
 
         function copiarLetra(id) { navigator.clipboard.writeText(document.getElementById(`edit-${id}`).value); mostrarToast("Copiado! 📋"); }
