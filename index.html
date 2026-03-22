@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conquistador Sound | IA Musical</title>
+    <style>
+        /* CSS Básico para o Estilo Azul e Moderno */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0e14; /* Fundo Dark */
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border-top: 5px solid #00a2ff; /* Linha Azul Conquistador */
+        }
+
+        h1 {
+            color: #00a2ff;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 0.9em;
+            color: #8b949e;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #00a2ff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #0077bb;
+            transform: scale(1.02);
+        }
+
+        .status {
+            margin-top: 15px;
+            font-style: italic;
+            color: #58a6ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Conquistador Sound</h1>
+        <p>Transforme sua letra em um império musical com IA.</p>
+        
+        <textarea placeholder="Cole sua letra aqui..."></textarea>
+        
+        <button onclick="gerarVibe()">GERAR TRILHA SONORA</button>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // Pequena lógica para interatividade
+        function gerarVibe() {
+            const status = document.getElementById('status');
+            status.innerText = "Analisando a vibe da sua letra... 🎧";
+            
+            // Aqui futuramente conectaremos com o Python
+            setTimeout(() => {
+                status.innerText = "IA processando a trilha Dark/Epic... ⚡";
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>
