@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conquistador Studio | AI Partner</title>
+    <title>Conquistador Studio | Pro Final</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -41,7 +41,7 @@
         .nav-item.active { color: #00a2ff; }
 
         /* Conteúdo */
-        .content { flex: 1; position: relative; display: flex; flex-direction: column; }
+        .content { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
         .tab-content { 
             display: none; 
@@ -49,173 +49,167 @@
             height: 100%;
             padding: 20px;
             flex-direction: column;
+            overflow-y: auto;
         }
         .tab-content.active { display: flex; }
 
-        /* Chat IA */
-        #chat-container {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 80px;
-        }
+        h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
 
-        .msg {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .msg.ia {
-            background: #161b22;
-            color: #c9d1d9;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            border: 1px solid #30363d;
-        }
-
-        .msg.user {
-            background: #00a2ff;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-input-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px;
-            background: #0d1117;
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid #30363d;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 25px;
-            padding: 12px 20px;
-            color: white;
-            outline: none;
-        }
-
-        .btn-send {
-            background: #00a2ff;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        /* Outras Abas */
-        textarea {
-            width: 100%; height: 60%; background: #161b22; border: 1px solid #30363d;
-            border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none;
+        /* Compor */
+        textarea#texto-letra {
+            width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d;
+            border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none;
         }
 
         .btn-blue {
             background: #00a2ff; color: white; border: none; padding: 15px;
-            border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%;
+            border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer;
         }
+
+        /* Biblioteca Cards */
+        .music-card { background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00a2ff; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .header-info { display: flex; align-items: center; gap: 10px; }
+        .btn-delete { background: transparent; color: #f85149; border: none; cursor: pointer; font-size: 1.1rem; }
+        .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
+        .edit-area { width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; padding: 10px; margin-bottom: 10px; resize: none; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-save-edit { background: #00a2ff; color: white; border: none; padding: 10px; border-radius: 5px; flex: 1; font-weight: bold; }
+        .btn-copy { background: #238636; color: white; border: none; padding: 10px; border-radius: 5px; flex: 1; font-weight: bold; }
+
+        /* Chat IA */
+        #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; }
+        .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; }
+        .msg.user { background: #00a2ff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        .chat-input-area {
+            display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #30363d; background: #0d1117;
+        }
+        .chat-input-area input { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 12px 20px; color: white; outline: none; }
+        .btn-send { background: #00a2ff; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; cursor: pointer; }
+
+        /* Toasts e Modais */
+        #custom-toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00a2ff; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; }
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
+        .modal-box { background: #1c2128; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
+    <div id="custom-toast"></div>
+    <div id="modal-overlay"><div class="modal-box"><p id="modal-text">Excluir música?</p><div class="btn-group" style="margin-top:20px"><button class="btn-blue" style="background:#30363d" onclick="fecharModal()">NÃO</button><button class="btn-blue" style="background:#f85149" id="confirm-del">SIM</button></div></div></div>
+
     <nav class="navbar">
-        <div class="nav-item" id="nav-compor" onclick="openTab('compor')">
-            <span>📝</span><span>Compor</span>
-        </div>
-        <div class="nav-item" id="nav-biblioteca" onclick="openTab('biblioteca')">
-            <span>📂</span><span>Músicas</span>
-        </div>
-        <div class="nav-item active" id="nav-ia" onclick="openTab('ia')">
-            <span>⚡</span><span>Produção IA</span>
-        </div>
+        <div class="nav-item active" id="nav-compor" onclick="openTab('compor')"><span>📝</span><span>Compor</span></div>
+        <div class="nav-item" id="nav-biblioteca" onclick="openTab('biblioteca')"><span>📂</span><span>Músicas</span></div>
+        <div class="nav-item" id="nav-ia" onclick="openTab('ia')"><span>⚡</span><span>Produção IA</span></div>
     </nav>
 
     <div class="content">
-        <div id="compor" class="tab-content">
-            <h1 style="text-align: center; margin-bottom: 15px;">Novo Hit</h1>
-            <textarea id="texto-letra" placeholder="Manda a letra..."></textarea>
-            <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR HIT</button>
+        <div id="compor" class="tab-content active">
+            <h1>Novo Hit</h1>
+            <textarea id="texto-letra" placeholder="Manda a letra aqui..."></textarea>
+            <button class="btn-blue" onclick="salvarNaBiblioteca()">SALVAR NA BIBLIOTECA</button>
         </div>
 
         <div id="biblioteca" class="tab-content">
-            <h1 style="text-align: center; margin-bottom: 15px;">Minhas Pastas</h1>
+            <h1>Minhas Pastas</h1>
             <div id="lista-musicas"></div>
         </div>
 
-        <div id="ia" class="tab-content active">
+        <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve, meu mano! Sou seu parceiro de estúdio. Qual a vibe do hit de hoje? Pode mandar a letra ou só a ideia que a gente desenrola! 🚀</div>
+                <div class="msg ia">Salve! Qual a vibe de hoje? 🚀</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Troca uma ideia com a IA..." onkeypress="checkEnter(event)">
+                <input type="text" id="chat-input" placeholder="Fala com a IA..." onkeypress="if(event.key==='Enter')enviarMensagem()">
                 <button class="btn-send" onclick="enviarMensagem()">➔</button>
             </div>
         </div>
     </div>
 
     <script>
+        let musicIdDel = null;
+
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
+            if(tabId === 'biblioteca') renderizarBiblioteca();
         }
 
-        function checkEnter(e) { if(e.key === 'Enter') enviarMensagem(); }
+        function mostrarToast(msg) {
+            const t = document.getElementById('custom-toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2500);
+        }
 
-        function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+        function salvarNaBiblioteca() {
+            const campo = document.getElementById('texto-letra');
+            if (!campo.value.trim()) return;
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            musicas.unshift({ id: Date.now(), titulo: campo.value.split('\n')[0].substring(0, 20), letra: campo.value, data: new Date().toLocaleDateString('pt-BR') });
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            campo.value = ""; mostrarToast("Salvo na Biblioteca! 🔥");
+        }
+
+        function renderizarBiblioteca() {
+            const container = document.getElementById('lista-musicas');
+            const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
+            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Vazio...</p>';
+            musicas.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'music-card';
+                card.innerHTML = `<div class="card-header"><span onclick="toggleCard(this.parentElement.parentElement)">${m.titulo}</span><div class="header-info"><small>${m.data}</small><button class="btn-delete" onclick="abrirModal(${m.id})">🗑️</button></div></div>
+                <div class="card-body"><textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea><div class="btn-group"><button class="btn-save-edit" onclick="atualizarMusica(${m.id})">SALVAR</button><button class="btn-copy" onclick="copiarLetra(${m.id})">COPIAR</button></div></div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleCard(card) {
+            const body = card.querySelector('.card-body');
+            const isOpen = body.style.display === 'block';
+            document.querySelectorAll('.card-body').forEach(b => b.style.display = 'none');
+            body.style.display = isOpen ? 'none' : 'block';
+        }
+
+        function atualizarMusica(id) {
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas'));
+            const idx = musicas.findIndex(m => m.id === id);
+            musicas[idx].letra = document.getElementById(`edit-${id}`).value;
+            musicas[idx].titulo = musicas[idx].letra.split('\n')[0].substring(0, 20);
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            mostrarToast("Atualizado! 📝"); renderizarBiblioteca();
+        }
+
+        function abrirModal(id) { musicIdDel = id; document.getElementById('modal-overlay').style.display = 'flex'; }
+        function fecharModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+        document.getElementById('confirm-del').onclick = () => {
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas')).filter(m => m.id !== musicIdDel);
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            fecharModal(); mostrarToast("Excluído! 🗑️"); renderizarBiblioteca();
+        };
 
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-container');
-            const textoUser = input.value.trim().toLowerCase();
+            if(!input.value.trim()) return;
+            const uM = document.createElement('div'); uM.className = 'msg user'; uM.innerText = input.value;
+            container.appendChild(uM); 
+            const txt = input.value.toLowerCase(); input.value = "";
+            container.scrollTop = container.scrollHeight; // RESOLVE O TRAVAMENTO (SCROLL)
             
-            if(!textoUser) return;
-
-            const userMsg = document.createElement('div');
-            userMsg.className = 'msg user';
-            userMsg.innerText = input.value;
-            container.appendChild(userMsg);
-            input.value = "";
-            container.scrollTop = container.scrollHeight;
-
             setTimeout(() => {
-                const iaMsg = document.createElement('div');
-                iaMsg.className = 'msg ia';
-                
-                // Personalidade Humana e Alegre
-                const saudar = ["Boa!", "Curti a visão!", "Eita, essa vai ser hit!", "Vibe pesada, hein?", "Tô sentindo a energia daqui! 🔥"];
-                const incentivar = ["Pode deixar comigo, tô pronto pra transformar isso em música.", "Dá pra sentir o feeling daqui, vamos pra cima!", "Sou teu braço direito nessa produção, mano."];
-                
-                let resposta = "";
-
-                if(textoUser.includes("calmo") || textoUser.includes("suave")) {
-                    resposta = "Uma pegada mais relax? Entendi perfeitamente. 🌊 " + escolher(incentivar) + " Prefere um violão de fundo ou algo mais sintetizado?";
-                } else if(textoUser.includes("agressivo") || textoUser.includes("grave") || textoUser.includes("trap")) {
-                    resposta = "Aulas! O grave vai tremer tudo. 🔥 " + escolher(incentivar) + " Quer um BPM mais acelerado ou aquele slow mais arrastado?";
-                } else {
-                    resposta = escolher(saudar) + " " + escolher(incentivar) + " O que mais você imagina pra essa faixa?";
-                }
-
-                iaMsg.innerText = resposta;
-                container.appendChild(iaMsg);
-                container.scrollTop = container.scrollHeight;
+                const iM = document.createElement('div'); iM.className = 'msg ia';
+                const falas = ["Boa!", "Ficou pesado!", "Tô na área!", "Bora produzir! 🔥"];
+                iM.innerText = falas[Math.floor(Math.random()*falas.length)] + " Quer focar no grave ou na letra?";
+                container.appendChild(iM); container.scrollTop = container.scrollHeight;
             }, 800);
         }
+
+        function copiarLetra(id) { navigator.clipboard.writeText(document.getElementById(`edit-${id}`).value); mostrarToast("Copiado! 📋"); }
     </script>
 </body>
 </html>
