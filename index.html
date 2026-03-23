@@ -94,7 +94,7 @@
                     novaLinha = novaLinha.replace(regex, novo);
                 }
                 resultado += novaLinha + "\n";
-                if ((i + 1) % 4 === 0) resultado += "\n"; // Separa estrofes a cada 4 linhas
+                if ((i + 1) % 4 === 0) resultado += "\n"; 
             });
             return resultado;
         }
@@ -124,66 +124,61 @@
             input.value = "";
             container.scrollTop = container.scrollHeight;
             
+            // DELAY DE 2 SEGUNDOS PARA O RESPIRO DO SISTEMA
             setTimeout(() => {
                 const iDiv = document.createElement('div'); iDiv.className = 'msg ia';
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                const termosAjuste = ["arrumar", "ajeitar", "mudar", "melhorar", "separar", "estrofe", "rima", "lapidar"];
-                const partesMusica = ["refrão", "verso", "ponte", "intro"];
-                const parteAlvo = partesMusica.find(p => texto.includes(p));
+                // 1. DETECTOR DE ELOGIOS / AGRADECIMENTOS
+                const sentimentosBons = ["brabo", "top", "incrivel", "vlw", "obrigado", "obrigada", "legal", "dahora", "amei", "gostei", "valeu", "show", "perfeito"];
+                const ehElogio = sentimentosBons.some(p => texto.includes(p));
 
-                if (termosAjuste.some(t => texto.includes(t)) || modoEdicao || msgUser.length > 40) {
+                // 2. DETECTOR DE COMANDOS DE CORREÇÃO
+                const termosCorrecao = ["arruma", "ajeita", "muda", "corrigir", "melhorar", "troca", "separar", "rima", "lapidar"];
+                const ehCorrecao = termosCorrecao.some(t => texto.includes(t));
+
+                if (ehElogio) {
+                    resposta = escolher(keimeDialetos.gratidao) + "\n\nO que a gente apronta agora? Quer mexer em mais algum verso ou começar um plano novo?";
+                } else if (ehCorrecao || modoEdicao) {
                     modoEdicao = true;
                     etapaChat = -1;
 
-                    if (texto.includes("separar") || texto.includes("estrofe") || msgUser.length > 40) {
+                    if (texto.includes("separar") || texto.includes("estrofe") || msgUser.length > 50) {
                         const letraUpgrade = lapidarLetra(msgUser);
-                        resposta = "Visão total! Dei aquele brilho de estúdio na métrica e separei os blocos pra ficar com o flow certo. Se liga:\n\n" + letraUpgrade + "\n\nO que achou dessa divisão?";
-                    } else if (parteAlvo) {
-                        resposta = `Pode crer! Vou focar 100% em deixar esse **${parteAlvo}** mais pesado. O que você mudaria nele pra bater mais forte?`;
+                        resposta = "Visão! Organizei os blocos pra dar aquele flow de estúdio. Se liga:\n\n" + letraUpgrade + "\n\nFicou melhor pra rimar?";
                     } else {
                         resposta = escolher(keimeDialetos.revisao);
                     }
-                    
-                    iDiv.innerText = resposta;
-                    container.appendChild(iDiv);
-                    container.scrollTop = container.scrollHeight;
-                    return;
-                }
-
-                const elogios = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora"];
-                let grato = elogios.some(p => texto.includes(p)) ? escolher(keimeDialetos.gratidao) + "\n\n" : "";
-
-                if (etapaChat === 0) {
+                } else if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = grato + escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som?";
+                    resposta = escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som?";
                     etapaChat = 1;
                 } else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = grato + "Visão captada. ✍️\n\nÉ pra AGITAR ou algo mais PROFUNDO?";
+                    resposta = "Visão captada. ✍️\n\nÉ um som pra AGITAR ou algo mais PROFUNDO?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
                     dadosMusica.detalhes = msgUser;
-                    resposta = "Aulas! O rascunho tá saindo... 🚀";
+                    resposta = "Aulas! O rascunho tá saindo do forno... 🚀";
                     iDiv.innerText = resposta;
                     container.appendChild(iDiv);
                     setTimeout(() => {
                         const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ O HIT:\n\n(Refrão)\nO tempo voa e o meu corre não para\nNo topo do mundo onde a luz se prepara\n\n(Verso)\nMinha caneta é a real do destino\nVenci os desafios no meu próprio caminho.\n\nCurtiu as rimas ou quer que eu lapide mais?";
+                        hitDiv.innerText = "AQUI ESTÁ O HIT:\n\n" + "(Refrão)\nO tempo voa e o meu corre não para\nNo topo do mundo onde a luz se prepara\n\n(Verso)\nMinha caneta é a real do destino\nVenci os desafios no meu próprio caminho.\n\nQuer que eu separe as estrofes ou mude alguma rima?";
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
                         etapaChat = 0; 
                     }, 2000);
                     return;
                 } else {
-                    resposta = "Manda a visão! Quer um hit novo ou ajeitar essa ideia?";
+                    resposta = "Tô na escuta! Quer lapidar o hit anterior ou começar uma ideia nova do zero?";
                 }
 
                 iDiv.innerText = resposta;
                 container.appendChild(iDiv); 
                 container.scrollTop = container.scrollHeight;
-            }, 1000);
+            }, 2000); 
         }
 
         function salvarNaBiblioteca() {
