@@ -100,7 +100,6 @@
             revisao: ["Bora lapidar esse diamante. O que não tá batendo?", "Manda a letra! O produtor nunca para até estar perfeito.", "Sou todo ouvidos. Qual parte a gente vai mudar?", "Pode falar, onde a gente vai mexer?"]
         };
 
-        // NOVO MOTOR DE CRIATIVIDADE DO KEIME
         const bancoCriativo = {
             rimasGerais: ["meu destino", "venci o perigo", "foco no objetivo", "sigo vivo", "mundo gira", "minha trilha", "família em primeiro", "dia inteiro"],
             estilos: {
@@ -125,21 +124,16 @@
 
         function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
-        // GERADOR DE LETRAS ÚNICAS
         function gerarHitUnico() {
             const estiloChave = dadosMusica.estilo.toLowerCase();
-            let listaEstilo = bancoCriativo.estilos.trap; // Padrão
-            
+            let listaEstilo = bancoCriativo.estilos.trap;
             if(estiloChave.includes("funk")) listaEstilo = bancoCriativo.estilos.funk;
             else if(estiloChave.includes("drill")) listaEstilo = bancoCriativo.estilos.drill;
             else if(estiloChave.includes("r&b") || estiloChave.includes("suave")) listaEstilo = bancoCriativo.estilos.rnb;
-
             const viber = dadosMusica.detalhes.toLowerCase().includes("agitado") ? bancoCriativo.vibes.agitado : bancoCriativo.vibes.profundo;
 
-            // Constrói a letra misturando dados do usuário com o banco
             let hit = `(Refrão)\n${escolher(listaEstilo)}\n${dadosMusica.tema.substring(0, 30)}... eu sigo no jeito\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(viber)}\n\n`;
-            hit += `(Verso)\nMinha história é real, ${dadosMusica.tema.split(' ')[0]} é a missão\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(listaEstilo)}\nNão paro por nada, foco na visão.`;
-            
+            hit += `(Verso)\nMinha história é real, missão é o foco\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(listaEstilo)}\nNão paro por nada, sigo no topo.`;
             return hit;
         }
 
@@ -192,52 +186,55 @@
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                const sentimentosBons = ["brabo", "top", "incrivel", "vlw", "obrigado", "obrigada", "legal", "dahora", "amei", "gostei", "valeu", "show", "perfeito"];
-                const ehElogio = sentimentosBons.some(p => texto.includes(p));
+                // LOGICA DE INTENÇÃO (O "FREIO")
+                const ehElogio = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora", "amei", "gostei"].some(p => texto.includes(p));
+                const querEditar = ["arruma", "ajeita", "muda", "corrigir", "melhorar", "troca", "separar", "rima", "lapidar", "mexer", "aceitar"].some(t => texto.includes(t));
+                const querNovo = ["novo", "outra", "do zero", "reiniciar"].some(n => texto.includes(n));
 
-                const termosCorrecao = ["arruma", "ajeita", "muda", "corrigir", "melhorar", "troca", "separar", "rima", "lapidar"];
-                const ehCorrecao = termosCorrecao.some(t => texto.includes(t));
-
-                if (ehElogio) {
-                    resposta = escolher(keimeDialetos.gratidao) + "\n\nO que a gente apronta agora?";
-                } else if (ehCorrecao || modoEdicao) {
+                if (querNovo) {
+                    etapaChat = 0; modoEdicao = false;
+                    resposta = "Pode crer! Estúdio limpo. 🎙️\n\nQual o estilo dessa nova pedrada?";
+                } 
+                else if (querEditar) {
                     modoEdicao = true;
-                    if (texto.includes("separar") || texto.includes("estrofe") || msgUser.length > 50) {
-                        const letraUpgrade = lapidarLetra(msgUser);
-                        resposta = "Visão! Organizei os blocos pra dar aquele flow. Se liga:\n\n" + letraUpgrade;
-                    } else {
-                        resposta = escolher(keimeDialetos.revisao);
-                    }
-                } else if (etapaChat === 0) {
+                    resposta = escolher(keimeDialetos.revisao);
+                }
+                else if (ehElogio && etapaChat === 3) {
+                    resposta = escolher(keimeDialetos.gratidao) + "\n\nO som tá no ponto ou quer que eu ajeite mais alguma rima?";
+                }
+                else if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som? (Me conta os detalhes pra eu criar algo único)";
+                    resposta = escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som?";
                     etapaChat = 1;
-                } else if (etapaChat === 1) {
+                } 
+                else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = "Visão captada. ✍️\n\nQuer um hit pra AGITAR a galera ou algo mais PROFUNDO/MELÓDICO?";
+                    resposta = "Visão captada. ✍️\n\nQuer um hit pra AGITAR ou algo mais PROFUNDO?";
                     etapaChat = 2;
-                } else if (etapaChat === 2) {
+                } 
+                else if (etapaChat === 2) {
                     dadosMusica.detalhes = msgUser;
-                    resposta = "Deixa comigo, tô sentindo a vibe... 🚀 Gerando uma composição inédita...";
+                    resposta = "Deixa comigo, tô sentindo a vibe... 🚀 Gerando uma composição única...";
                     iDiv.innerText = resposta;
                     container.appendChild(iDiv);
                     
                     setTimeout(() => {
                         const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ SEU HIT EXCLUSIVO:\n\n" + gerarHitUnico() + "\n\nO que achou dessa narração? Se quiser mudar o tom ou o flow, é só falar!";
+                        hitDiv.innerText = "AQUI ESTÁ SEU HIT EXCLUSIVO:\n\n" + gerarHitUnico();
                         container.appendChild(hitDiv);
                         container.scrollTop = container.scrollHeight;
-                        etapaChat = 0; 
+                        etapaChat = 3; 
                     }, 2000);
                     return;
-                } else {
-                    resposta = "Tô na escuta! Quer iniciar uma produção inédita ou lapidar o que já temos?";
+                } 
+                else {
+                    resposta = "Tô na escuta! Quer mexer na letra ou o plano é outro?";
                 }
 
                 iDiv.innerText = resposta;
                 container.appendChild(iDiv); 
                 container.scrollTop = container.scrollHeight;
-            }, 2000); 
+            }, 1500); 
         }
 
         function salvarNaBiblioteca() {
