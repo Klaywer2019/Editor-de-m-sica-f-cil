@@ -7,7 +7,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Ajuste para altura dinâmica do dispositivo */
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #0d1117; 
@@ -27,12 +26,7 @@
         .tab-content { display: none; width: 100%; height: 100%; padding: 20px; flex-direction: column; overflow-y: auto; }
         .tab-content.active { display: flex; }
 
-        /* Ajuste específico para a aba do Keime não sumir com o input */
-        #ia.tab-content.active {
-            display: flex;
-            flex-direction: column;
-            padding: 10px 20px;
-        }
+        #ia.tab-content.active { display: flex; flex-direction: column; padding: 10px 20px; }
 
         h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
         textarea#texto-letra { width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none; }
@@ -41,6 +35,14 @@
         .music-card { background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00a2ff; }
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; }
         .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
+        
+        /* Estilos da nova barra de botões */
+        .card-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-action { flex: 1; padding: 12px 5px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
+        .btn-copy { background: #30363d; color: white; }
+        .btn-delete { background: #da3633; color: white; }
+        .btn-update { background: #00a2ff; color: white; flex: 1.5; }
+
         .edit-area { width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; padding: 10px; margin-bottom: 10px; resize: none; }
 
         #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 10px; }
@@ -48,20 +50,11 @@
         .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; white-space: pre-wrap; }
         .msg.user { background: #00a2ff; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        /* Barra de digitação fixa no final */
-        .chat-input-area { 
-            display: flex; 
-            gap: 10px; 
-            padding: 10px 0; 
-            border-top: 1px solid #30363d; 
-            background: #0d1117; 
-            flex-shrink: 0; 
-            margin-bottom: 5px;
-        }
+        .chat-input-area { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #30363d; background: #0d1117; flex-shrink: 0; margin-bottom: 5px; }
         .chat-input-area input { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 12px 20px; color: white; outline: none; min-width: 0; }
         .btn-send { background: #00a2ff; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; cursor: pointer; flex-shrink: 0; }
         
-        #custom-toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00a2ff; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; }
+        #custom-toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00a2ff; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -139,7 +132,6 @@
             document.getElementById(tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
             if(tabId === 'biblioteca') renderizarBiblioteca();
-            // Garante que o scroll vá pro final ao abrir o chat
             if(tabId === 'ia') {
                 const container = document.getElementById('chat-container');
                 container.scrollTop = container.scrollHeight;
@@ -175,14 +167,12 @@
                 const ehCorrecao = termosCorrecao.some(t => texto.includes(t));
 
                 if (ehElogio) {
-                    resposta = escolher(keimeDialetos.gratidao) + "\n\nO que a gente apronta agora? Quer mexer em mais algum verso ou começar um plano novo?";
+                    resposta = escolher(keimeDialetos.gratidao) + "\n\nO que a gente apronta agora?";
                 } else if (ehCorrecao || modoEdicao) {
                     modoEdicao = true;
-                    etapaChat = -1;
-
                     if (texto.includes("separar") || texto.includes("estrofe") || msgUser.length > 50) {
                         const letraUpgrade = lapidarLetra(msgUser);
-                        resposta = "Visão! Organizei os blocos pra dar aquele flow de estúdio. Se liga:\n\n" + letraUpgrade + "\n\nFicou melhor pra rimar?";
+                        resposta = "Visão! Organizei os blocos pra dar aquele flow. Se liga:\n\n" + letraUpgrade;
                     } else {
                         resposta = escolher(keimeDialetos.revisao);
                     }
@@ -195,20 +185,10 @@
                     resposta = "Visão captada. ✍️\n\nÉ um som pra AGITAR ou algo mais PROFUNDO?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
-                    dadosMusica.detalhes = msgUser;
-                    resposta = "Aulas! O rascunho tá saindo do forno... 🚀";
-                    iDiv.innerText = resposta;
-                    container.appendChild(iDiv);
-                    setTimeout(() => {
-                        const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
-                        hitDiv.innerText = "AQUI ESTÁ O HIT:\n\n" + "(Refrão)\nO tempo voa e o meu corre não para\nNo topo do mundo onde a luz se prepara\n\n(Verso)\nMinha caneta é a real do destino\nVenci os desafios no meu próprio caminho.\n\nQuer que eu separe as estrofes ou mude alguma rima?";
-                        container.appendChild(hitDiv);
-                        container.scrollTop = container.scrollHeight;
-                        etapaChat = 0; 
-                    }, 2000);
-                    return;
+                    resposta = "AQUI ESTÁ O HIT:\n\n(Refrão)\nO tempo voa e o meu corre não para\nNo topo do mundo onde a luz se prepara\n\nQuer que eu separe as estrofes?";
+                    etapaChat = 0;
                 } else {
-                    resposta = "Tô na escuta! Quer lapidar o hit anterior ou começar uma ideia nova do zero?";
+                    resposta = "Tô na escuta! O que manda?";
                 }
 
                 iDiv.innerText = resposta;
@@ -229,12 +209,23 @@
         function renderizarBiblioteca() {
             const container = document.getElementById('lista-musicas');
             const musicas = JSON.parse(localStorage.getItem('conquistador_musicas')) || [];
-            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;">Biblioteca Vazia...</p>';
+            container.innerHTML = musicas.length ? "" : '<p style="text-align:center;color:#8b949e;margin-top:20px;">Biblioteca Vazia...</p>';
             musicas.forEach(m => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
-                card.innerHTML = `<div class="card-header" onclick="toggleCard(this.parentElement)"><span>${m.titulo}</span><small>${m.data}</small></div>
-                <div class="card-body"><textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea><button class="btn-blue" onclick="atualizarMusica(${m.id})">ATUALIZAR</button></div>`;
+                card.innerHTML = `
+                    <div class="card-header" onclick="toggleCard(this.parentElement)">
+                        <span>${m.titulo}</span>
+                        <small>${m.data}</small>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="edit-area" id="edit-${m.id}">${m.letra}</textarea>
+                        <div class="card-actions">
+                            <button class="btn-action btn-copy" onclick="copiarMusica('${m.id}')">COPIAR</button>
+                            <button class="btn-action btn-delete" onclick="excluirMusica(${m.id})">EXCLUIR</button>
+                            <button class="btn-action btn-update" onclick="atualizarMusica(${m.id})">SALVAR</button>
+                        </div>
+                    </div>`;
                 container.appendChild(card);
             });
         }
@@ -249,7 +240,25 @@
             const idx = musicas.findIndex(m => m.id === id);
             musicas[idx].letra = document.getElementById(`edit-${id}`).value;
             localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
-            mostrarToast("Atualizado! 📝");
+            mostrarToast("Alterações salvas! 📝");
+        }
+
+        function excluirMusica(id) {
+            if(!confirm("Deseja apagar essa pasta?")) return;
+            let musicas = JSON.parse(localStorage.getItem('conquistador_musicas'));
+            musicas = musicas.filter(m => m.id !== id);
+            localStorage.setItem('conquistador_musicas', JSON.stringify(musicas));
+            renderizarBiblioteca();
+            mostrarToast("Pasta excluída! 🗑️");
+        }
+
+        function copiarMusica(id) {
+            const texto = document.getElementById(`edit-${id}`).value;
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast("Letra copiada! 📋");
+            }).catch(() => {
+                mostrarToast("Erro ao copiar...");
+            });
         }
     </script>
 </body>
