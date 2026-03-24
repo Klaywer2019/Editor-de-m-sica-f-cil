@@ -2,31 +2,65 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Conquistador Studio | Keime Producer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: white; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        .navbar { background-color: #161b22; border-bottom: 2px solid #00a2ff; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; }
+        
+        /* Ajuste para altura dinâmica do dispositivo */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0d1117; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100dvh; 
+            overflow: hidden; 
+        }
+
+        .navbar { background-color: #161b22; border-bottom: 2px solid #00a2ff; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; flex-shrink: 0; }
         .nav-item { color: #8b949e; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .nav-item.active { color: #00a2ff; }
+        
         .content { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        
         .tab-content { display: none; width: 100%; height: 100%; padding: 20px; flex-direction: column; overflow-y: auto; }
         .tab-content.active { display: flex; }
+
+        /* Ajuste específico para a aba do Keime não sumir com o input */
+        #ia.tab-content.active {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 20px;
+        }
+
         h1 { font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
         textarea#texto-letra { width: 100%; height: 300px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; color: white; padding: 15px; font-size: 1rem; resize: none; outline: none; }
-        .btn-blue { background: #00a2ff; color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-blue { background: #00a2ff; color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; cursor: pointer; flex-shrink: 0; }
+        
         .music-card { background: #1c2128; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00a2ff; }
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; }
         .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
         .edit-area { width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; padding: 10px; margin-bottom: 10px; resize: none; }
-        #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
+
+        #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 10px; }
         .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
         .msg.ia { background: #161b22; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #30363d; white-space: pre-wrap; }
         .msg.user { background: #00a2ff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-input-area { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #30363d; background: #0d1117; }
-        .chat-input-area input { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 12px 20px; color: white; outline: none; }
-        .btn-send { background: #00a2ff; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; cursor: pointer; }
+
+        /* Barra de digitação fixa no final */
+        .chat-input-area { 
+            display: flex; 
+            gap: 10px; 
+            padding: 10px 0; 
+            border-top: 1px solid #30363d; 
+            background: #0d1117; 
+            flex-shrink: 0; 
+            margin-bottom: 5px;
+        }
+        .chat-input-area input { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 12px 20px; color: white; outline: none; min-width: 0; }
+        .btn-send { background: #00a2ff; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; cursor: pointer; flex-shrink: 0; }
+        
         #custom-toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00a2ff; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; }
     </style>
 </head>
@@ -105,6 +139,11 @@
             document.getElementById(tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
             if(tabId === 'biblioteca') renderizarBiblioteca();
+            // Garante que o scroll vá pro final ao abrir o chat
+            if(tabId === 'ia') {
+                const container = document.getElementById('chat-container');
+                container.scrollTop = container.scrollHeight;
+            }
         }
 
         function mostrarToast(msg) {
@@ -124,17 +163,14 @@
             input.value = "";
             container.scrollTop = container.scrollHeight;
             
-            // DELAY DE 2 SEGUNDOS PARA O RESPIRO DO SISTEMA
             setTimeout(() => {
                 const iDiv = document.createElement('div'); iDiv.className = 'msg ia';
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                // 1. DETECTOR DE ELOGIOS / AGRADECIMENTOS
                 const sentimentosBons = ["brabo", "top", "incrivel", "vlw", "obrigado", "obrigada", "legal", "dahora", "amei", "gostei", "valeu", "show", "perfeito"];
                 const ehElogio = sentimentosBons.some(p => texto.includes(p));
 
-                // 2. DETECTOR DE COMANDOS DE CORREÇÃO
                 const termosCorrecao = ["arruma", "ajeita", "muda", "corrigir", "melhorar", "troca", "separar", "rima", "lapidar"];
                 const ehCorrecao = termosCorrecao.some(t => texto.includes(t));
 
