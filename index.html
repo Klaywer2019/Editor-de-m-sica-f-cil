@@ -89,8 +89,8 @@
         </div>
     </div>
 
-<script src="keime-data.js"></script>
-<script src="conhecimento.js"></script>
+    <script src="keime-data.js"></script>
+    <script src="conhecimento.js"></script>
 
     <script>
         let etapaChat = 0;
@@ -127,16 +127,25 @@
 
         function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
+        // GERADOR ATUALIZADO PARA USAR OS DADOS EXTERNOS
         function gerarHitUnico() {
             const estiloChave = dadosMusica.estilo.toLowerCase();
             let listaEstilo = bancoCriativo.estilos.trap;
+            
             if(estiloChave.includes("funk")) listaEstilo = bancoCriativo.estilos.funk;
             else if(estiloChave.includes("drill")) listaEstilo = bancoCriativo.estilos.drill;
-            else if(estiloChave.includes("r&b") || estiloChave.includes("suave")) listaEstilo = bancoCriativo.estilos.rnb;
+            else if(estiloChave.includes("r&b")) listaEstilo = bancoCriativo.estilos.rnb;
+
             const viber = dadosMusica.detalhes.toLowerCase().includes("agitado") ? bancoCriativo.vibes.agitado : bancoCriativo.vibes.profundo;
 
-            let hit = `(Refrão)\n${escolher(listaEstilo)}\n${dadosMusica.tema.substring(0, 30)}... eu sigo no jeito\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(viber)}\n\n`;
-            hit += `(Verso)\nMinha história é real, missão é o foco\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(listaEstilo)}\nNão paro por nada, sigo no topo.`;
+            // Tentativa de puxar dos arquivos externos, se não existir usa o banco interno
+            const giriaBr = typeof puxarInspiracao === 'function' ? puxarInspiracao("girias_br") : escolher(bancoCriativo.rimasGerais);
+            const termoEn = typeof puxarInspiracao === 'function' ? puxarInspiracao("estetica_en") : "lifestyle";
+            const mix = typeof misturarIdiomas === 'function' ? misturarIdiomas() : "Papo reto no topo";
+
+            let hit = `(Refrão)\n${escolher(listaEstilo)}\n${giriaBr.toUpperCase()}... ${termoEn}\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(viber)}\n\n`;
+            hit += `(Verso)\n${mix}\nMinha história é real, ${dadosMusica.tema.split(' ')[0]} é a missão\n${escolher(bancoCriativo.rimasGerais)}\nNão paro por nada, foco na visão.`;
+            
             return hit;
         }
 
@@ -189,7 +198,6 @@
                 let resposta = "";
                 const texto = msgUser.toLowerCase();
 
-                // LOGICA DE INTENÇÃO (O "FREIO")
                 const ehElogio = ["brabo", "top", "incrivel", "vlw", "obrigado", "legal", "dahora", "amei", "gostei"].some(p => texto.includes(p));
                 const querEditar = ["arruma", "ajeita", "muda", "corrigir", "melhorar", "troca", "separar", "rima", "lapidar", "mexer", "aceitar"].some(t => texto.includes(t));
                 const querNovo = ["novo", "outra", "do zero", "reiniciar"].some(n => texto.includes(n));
@@ -237,7 +245,7 @@
                 iDiv.innerText = resposta;
                 container.appendChild(iDiv); 
                 container.scrollTop = container.scrollHeight;
-            }, 1500); 
+            }, 1200); 
         }
 
         function salvarNaBiblioteca() {
