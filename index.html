@@ -36,7 +36,6 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; }
         .card-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d; }
         
-        /* Estilos da nova barra de botões */
         .card-actions { display: flex; gap: 8px; margin-top: 10px; }
         .btn-action { flex: 1; padding: 12px 5px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
         .btn-copy { background: #30363d; color: white; }
@@ -81,7 +80,7 @@
 
         <div id="ia" class="tab-content">
             <div id="chat-container">
-                <div class="msg ia">Salve! Sou o Keime. 🎧\n\nQuer criar um hit novo ou precisa de um help pra lapidar uma letra?</div>
+                <div class="msg ia">Salve! Sou o Keime. 🎧\n\nQual a vibe de hoje? Vamos criar um som único do zero ou lapidar um rascunho?</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Fala com o Keime..." onkeypress="if(event.key==='Enter')enviarMensagem()">
@@ -101,6 +100,21 @@
             revisao: ["Bora lapidar esse diamante. O que não tá batendo?", "Manda a letra! O produtor nunca para até estar perfeito.", "Sou todo ouvidos. Qual parte a gente vai mudar?", "Pode falar, onde a gente vai mexer?"]
         };
 
+        // NOVO MOTOR DE CRIATIVIDADE DO KEIME
+        const bancoCriativo = {
+            rimasGerais: ["meu destino", "venci o perigo", "foco no objetivo", "sigo vivo", "mundo gira", "minha trilha", "família em primeiro", "dia inteiro"],
+            estilos: {
+                trap: ["Grave batendo no peito", "Visão de cria, sem erro", "Notas voando no vento", "Diamante lapidado no tempo"],
+                funk: ["Baile tá lotado, fumaça pro alto", "As nota de cem contando no asfalto", "Passinho na régua, sem neurose", "Vencendo na vida, sem dar hipótese"],
+                drill: ["Passo mascarado na noite escura", "Sobrevivente dessa selva de rua", "Gelo no pescoço, fogo na mente", "Minha banca domina, sigo na frente"],
+                rnb: ["Na luz da lua a gente se entende", "Sentimento puro que a alma sente", "Notas suaves, flow envolvente", "Nossa sintonia é o que nos prende"]
+            },
+            vibes: {
+                agitado: ["Energia lá no topo, ninguém segura", "Batida pesada, adrenalina pura", "Quebrando as regras, fazendo a história"],
+                profundo: ["Cicatrizes que viraram medalhas", "Na luta constante, vencendo batalhas", "Pensamentos voam além do horizonte"]
+            }
+        };
+
         const dicionarioCriativo = {
             substitutos: {
                 "trabalho": "corre", "sucesso": "topo", "dinheiro": "malote",
@@ -110,6 +124,24 @@
         };
 
         function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
+        // GERADOR DE LETRAS ÚNICAS
+        function gerarHitUnico() {
+            const estiloChave = dadosMusica.estilo.toLowerCase();
+            let listaEstilo = bancoCriativo.estilos.trap; // Padrão
+            
+            if(estiloChave.includes("funk")) listaEstilo = bancoCriativo.estilos.funk;
+            else if(estiloChave.includes("drill")) listaEstilo = bancoCriativo.estilos.drill;
+            else if(estiloChave.includes("r&b") || estiloChave.includes("suave")) listaEstilo = bancoCriativo.estilos.rnb;
+
+            const viber = dadosMusica.detalhes.toLowerCase().includes("agitado") ? bancoCriativo.vibes.agitado : bancoCriativo.vibes.profundo;
+
+            // Constrói a letra misturando dados do usuário com o banco
+            let hit = `(Refrão)\n${escolher(listaEstilo)}\n${dadosMusica.tema.substring(0, 30)}... eu sigo no jeito\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(viber)}\n\n`;
+            hit += `(Verso)\nMinha história é real, ${dadosMusica.tema.split(' ')[0]} é a missão\n${escolher(bancoCriativo.rimasGerais)}\n${escolher(listaEstilo)}\nNão paro por nada, foco na visão.`;
+            
+            return hit;
+        }
 
         function lapidarLetra(textoBase) {
             let linhas = textoBase.split('\n').filter(l => l.trim() !== "");
@@ -178,17 +210,28 @@
                     }
                 } else if (etapaChat === 0) {
                     dadosMusica.estilo = msgUser;
-                    resposta = escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som?";
+                    resposta = escolher(keimeDialetos.entendido) + " Estilo " + dadosMusica.estilo + ". 🎧\n\nQual a HISTÓRIA por trás desse som? (Me conta os detalhes pra eu criar algo único)";
                     etapaChat = 1;
                 } else if (etapaChat === 1) {
                     dadosMusica.tema = msgUser;
-                    resposta = "Visão captada. ✍️\n\nÉ um som pra AGITAR ou algo mais PROFUNDO?";
+                    resposta = "Visão captada. ✍️\n\nQuer um hit pra AGITAR a galera ou algo mais PROFUNDO/MELÓDICO?";
                     etapaChat = 2;
                 } else if (etapaChat === 2) {
-                    resposta = "AQUI ESTÁ O HIT:\n\n(Refrão)\nO tempo voa e o meu corre não para\nNo topo do mundo onde a luz se prepara\n\nQuer que eu separe as estrofes?";
-                    etapaChat = 0;
+                    dadosMusica.detalhes = msgUser;
+                    resposta = "Deixa comigo, tô sentindo a vibe... 🚀 Gerando uma composição inédita...";
+                    iDiv.innerText = resposta;
+                    container.appendChild(iDiv);
+                    
+                    setTimeout(() => {
+                        const hitDiv = document.createElement('div'); hitDiv.className = 'msg ia';
+                        hitDiv.innerText = "AQUI ESTÁ SEU HIT EXCLUSIVO:\n\n" + gerarHitUnico() + "\n\nO que achou dessa narração? Se quiser mudar o tom ou o flow, é só falar!";
+                        container.appendChild(hitDiv);
+                        container.scrollTop = container.scrollHeight;
+                        etapaChat = 0; 
+                    }, 2000);
+                    return;
                 } else {
-                    resposta = "Tô na escuta! O que manda?";
+                    resposta = "Tô na escuta! Quer iniciar uma produção inédita ou lapidar o que já temos?";
                 }
 
                 iDiv.innerText = resposta;
