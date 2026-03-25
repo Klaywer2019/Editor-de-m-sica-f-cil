@@ -97,6 +97,7 @@
     <script src="conhecimento.js"></script>
 
     <script>
+        // ... (Mantendo sua lógica JavaScript original para o chat e biblioteca)
         let etapaChat = 0;
         let modoEdicao = false;
         let dadosMusica = { estilo: "", tema: "", detalhes: "" };
@@ -318,16 +319,30 @@
         import random
 
         def carregar_motor():
-            # Isso aparece apenas no console do navegador (F12)
-            print(">>> KEIME PYTHON CORE: ON-LINE")
+            print("-" * 30)
+            print(">>> KEIME V2: MOTOR PENSANTE ATIVADO")
             print(">>> MENTOR GEMINI: CONECTADO")
+            print("-" * 30)
 
         carregar_motor()
 
-        # Exemplo de função que o Python faria melhor: Combinar rimas complexas
-        def pensar_como_keime(tema):
-            ideias = ["estilo livre", "foco no milhão", "papo de visão"]
-            return f"Keime pensando em Python sobre {tema}: {random.choice(ideias)}"
+        def gerar_barra_mestre(tema):
+            # O Python combina gírias com uma estrutura de "Punchline"
+            prefixos = ["Papo de visão:", "Se liga no corre:", "Sem neurose:", "A real é uma só:"]
+            conexoes = [
+                "seguindo a risca o plano", 
+                "foco no milhão e mente no topo", 
+                "transformando suor em diamante puro",
+                "construindo o império tijolo por tijolo"
+            ]
+            slangs = ["No cap", "Ice on my neck", "Blessed", "Top tier", "Hype"]
+            
+            barra = f"{random.choice(prefixos)} {tema} {random.choice(conexoes)} ({random.choice(slangs)})"
+            return barra
+
+        # Teste inicial para o console
+        print("Insight do Dia:")
+        print(gerar_barra_mestre("Superação"))
     </script>
 
 </body>
