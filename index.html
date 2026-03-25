@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Conquistador Studio | Keime Producer</title>
+    
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -127,18 +131,15 @@
 
         function escolher(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
-        // GERADOR ATUALIZADO PARA USAR OS DADOS EXTERNOS
         function gerarHitUnico() {
             const estiloChave = dadosMusica.estilo.toLowerCase();
             let listaEstilo = bancoCriativo.estilos.trap;
-            
             if(estiloChave.includes("funk")) listaEstilo = bancoCriativo.estilos.funk;
             else if(estiloChave.includes("drill")) listaEstilo = bancoCriativo.estilos.drill;
             else if(estiloChave.includes("r&b")) listaEstilo = bancoCriativo.estilos.rnb;
 
             const viber = dadosMusica.detalhes.toLowerCase().includes("agitado") ? bancoCriativo.vibes.agitado : bancoCriativo.vibes.profundo;
 
-            // Tentativa de puxar dos arquivos externos, se não existir usa o banco interno
             const giriaBr = typeof puxarInspiracao === 'function' ? puxarInspiracao("girias_br") : escolher(bancoCriativo.rimasGerais);
             const termoEn = typeof puxarInspiracao === 'function' ? puxarInspiracao("estetica_en") : "lifestyle";
             const mix = typeof misturarIdiomas === 'function' ? misturarIdiomas() : "Papo reto no topo";
@@ -312,5 +313,22 @@
             });
         }
     </script>
+
+    <script type="py">
+        import random
+
+        def carregar_motor():
+            # Isso aparece apenas no console do navegador (F12)
+            print(">>> KEIME PYTHON CORE: ON-LINE")
+            print(">>> MENTOR GEMINI: CONECTADO")
+
+        carregar_motor()
+
+        # Exemplo de função que o Python faria melhor: Combinar rimas complexas
+        def pensar_como_keime(tema):
+            ideias = ["estilo livre", "foco no milhão", "papo de visão"]
+            return f"Keime pensando em Python sobre {tema}: {random.choice(ideias)}"
+    </script>
+
 </body>
 </html>
